@@ -21,9 +21,9 @@ entity top is
     );
 end top;
 
-architecture Behavioral of top is
+architecture STRUCTURAL of top is
 
 begin
 
 
-end Behavioral;
+end STRUCTURAL;
