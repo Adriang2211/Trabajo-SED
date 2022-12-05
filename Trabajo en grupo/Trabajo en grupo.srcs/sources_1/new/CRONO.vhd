@@ -14,13 +14,32 @@ entity CRONO is
         CLK      : in  STD_LOGIC; -- Señal de reloj
         RESET    : in  STD_LOGIC; -- Reset asincrono
         ENABLE   : in  STD_LOGIC; -- Chip enable
-        TIME     : out UNSIGNED (out_time_width-1 downto 0) -- Salda del cronometro en segundos
+        LOAD_ENABLE:  IN STD_LOGIC; -- WHEN '1' LOAD 
+        TIMES     : out UNSIGNED (out_time_width-1 downto 0) -- Salda del cronometro en segundos
     );
 end CRONO;
 
 architecture Behavioral of CRONO is
-
+    signal load_i : unsigned(LOAD'RANGE);
 begin
+    process(CLK, RESET)
+         begin 
+                if RESET='1' THEN
+                    load_i<=(others=>'0');
+               IF LOAD_ENABLE ='1' THEN 
+               
+                END IF;
+                ELSIF rising_edge(clk) AND ENABLE='1' THEN 
+                    if UP_NDOWN='1' THEN  -- CONTADO HACIA ARRIBA DEL RELOJ HASTA LA CARGA
+                    
+                    
+                    ELSE --CONTADO HACIA ABAJO
+                        
+                      END IF;  
+                END IF;
+                
+             
+    end process
 
 
 end Behavioral;
