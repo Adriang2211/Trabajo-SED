@@ -35,11 +35,11 @@ begin
                         count_i<=(count_i+1) mod load_i;
                     
                     ELSE --CONTADO HACIA ABAJO
-                        load_i<=
+                       -- load_i<=
                       END IF;  
                 END IF;
                 
-             LOAD<=load_i;
+             TIMES<=count_i;
     end process
 
 
