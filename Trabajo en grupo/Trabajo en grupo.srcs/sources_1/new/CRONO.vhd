@@ -21,24 +21,25 @@ end CRONO;
 
 architecture Behavioral of CRONO is
     signal load_i : unsigned(LOAD'RANGE);
+    signal count_i: unsigned(Times'range);
 begin
     process(CLK, RESET)
          begin 
                 if RESET='1' THEN
                     load_i<=(others=>'0');
                IF LOAD_ENABLE ='1' THEN 
-               
+                    load_i<=LOAD;
                 END IF;
                 ELSIF rising_edge(clk) AND ENABLE='1' THEN 
                     if UP_NDOWN='1' THEN  -- CONTADO HACIA ARRIBA DEL RELOJ HASTA LA CARGA
-                    
+                        count_i<=(count_i+1) mod load_i;
                     
                     ELSE --CONTADO HACIA ABAJO
-                        
+                        load_i<=
                       END IF;  
                 END IF;
                 
-             
+             LOAD<=load_i;
     end process
 
 
