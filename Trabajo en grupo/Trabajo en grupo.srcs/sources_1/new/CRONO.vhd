@@ -23,11 +23,28 @@ end CRONO;
 architecture Behavioral of CRONO is
     signal load_i : unsigned(LOAD'RANGE);
     signal count_i: unsigned(Times'range);
-    
-  
+    signal clk_1_sec: std_logic ;
+  component FREQ_DIV is
+     Generic(
+        DIVIDE  : positive := 10
+    );
+    Port ( 
+        CLK_IN : in STD_LOGIC;
+        CLK_OUT : out STD_LOGIC
+        );
+  end component;
     --introducir el divisor de frecuencia para clk, utilizar esa salida donde clocklla .
 begin
    
+   freq_div_1_sec: FREQ_DIV
+        generic map(
+            DIVIDE =>1000000
+            )
+        port map(
+            CLK_IN=>CLK,
+            CLK_OUT=>clk_1_sec
+          
+        );
   
     process(CLK, RESET,LOAD_ENABLE)
      variable ceros: unsigned(LOAD'length-1 downto 0):= (others=>'0');
@@ -40,7 +57,7 @@ begin
                     load_i<=LOAD;
                     count_i<=(others=>'0');
                
-                ELSIF rising_edge(clk) AND ENABLE='1' THEN 
+                ELSIF rising_edge(clk_1_sec) AND ENABLE='1' THEN 
                     if UP_NDOWN='1' THEN 
                          -- CONTADO HACIA ARRIBA DEL RELOJ HASTA LA CARGA
                         count_i<=(count_i+1) mod load_i;
