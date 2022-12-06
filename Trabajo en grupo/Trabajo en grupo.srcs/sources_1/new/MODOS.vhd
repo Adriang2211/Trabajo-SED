@@ -23,9 +23,9 @@ entity MODOS is
     );
 end MODOS;
 
-architecture Behavioral of MODOS is
+architecture Structural of MODOS is
 
 begin
 
 
-end Behavioral;
+end Structural;
