@@ -67,9 +67,23 @@ architecture Structural of DISP_CRTL is
            );
     end component;
     
+    component DEC2BCD Port(
+        DATA_IN : in  std_logic_vector(6 downto 0); -- Entrada de un numero de 0 a 99 (7 bits)
+        CLK     : in  std_logic;
+        BCD1    : out std_logic_vector(3 downto 0); -- Decenas
+        BCD2    : out std_logic_vector(3 downto 0)  -- Unidades
+    );
+    end component;
+    
     signal dig_sel2decod_and_mux    : std_logic_vector (digits_range-1 downto 0);
     signal mux2dcdr         : std_logic_vector(3 downto 0); --Ancho fijo puesto que es BCD siempre
     signal internal_clk     : std_logic;
+    signal speed7b  : std_logic_vector(6 downto 0);
+    signal incl7b   : std_logic_vector(6 downto 0);
+    signal data1    : std_logic_vector(3 downto 0);
+    signal data2    : std_logic_vector(3 downto 0);
+    signal data3    : std_logic_vector(3 downto 0);
+    signal data4    : std_logic_vector(3 downto 0);
     
 begin
     divisor_de_frecuencia : FREQ_DIV Generic map(
@@ -89,10 +103,10 @@ begin
         );
         
     multiplexor : MUX Port Map(
-        DATA_IN1 => "0000", --  EN PRUEBAS / PROVISIONAL
-        DATA_IN2 => "0001",
-        DATA_IN3 => "0010",
-        DATA_IN4 => "0011",
+        DATA_IN1 => data1, --  EN PRUEBAS / PROVISIONAL
+        DATA_IN2 => data2,
+        DATA_IN3 => data3,
+        DATA_IN4 => data4,
         DATA_IN5 => "0100",
         DATA_IN6 => "0101",
         DATA_IN7 => "0110",
@@ -105,7 +119,27 @@ begin
         code => mux2dcdr,
         led => DISP_DATA
         );
-        
     
+    --Conversion de n=4 a 7 bits para la velocidad
+    speed7b (speed_width-1 downto 0) <= speed;
+    speed7b (6 downto speed_width) <= (others => '0');
+    
+    --Conversion de n=4 a 7 bits para la inclinacion
+    incl7b (incl_width-1 downto 0) <= incl;
+    incl7b (6 downto incl_width) <= (others => '0');
+    
+    speed_BCD_conversion : DEC2BCD Port map(
+        DATA_IN => speed7b,
+        CLK => CLK,
+        BCD1 => data1, --Decenas
+        BCD2 => data2 --Unidades
+        );
+    
+    incl_BCD_conversion : DEC2BCD Port map(
+        DATA_IN => incl7b,
+        CLK => CLK,
+        BCD1 => data3, --Decenas
+        BCD2 => data4 --Unidades
+        );
 
 end Structural;
