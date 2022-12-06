@@ -16,7 +16,7 @@ end FREQ_DIV;
 architecture Behavioral of FREQ_DIV is
     signal counter : integer := 0;
 begin
-    process (CLK_IN)
+    process (CLK_IN, RESET)
     begin
         CLK_OUT <= '0';
         if (RESET = '1') then

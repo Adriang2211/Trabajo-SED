@@ -75,6 +75,17 @@ architecture Structural of DISP_CRTL is
     );
     end component;
     
+    component TIME_CONV Generic (
+        input_width : positive := 13
+        );
+        Port(
+            DATA_IN     : in std_logic_vector(input_width-1 downto 0);
+            CLK         : in std_logic;
+            MIN         : out std_logic_vector(6 downto 0);
+            SEC         : out std_logic_vector(6 downto 0)
+        );
+    end component;
+    
     signal dig_sel2decod_and_mux    : std_logic_vector (digits_range-1 downto 0);
     signal mux2dcdr         : std_logic_vector(3 downto 0); --Ancho fijo puesto que es BCD siempre
     signal internal_clk     : std_logic;
@@ -84,6 +95,12 @@ architecture Structural of DISP_CRTL is
     signal data2    : std_logic_vector(3 downto 0);
     signal data3    : std_logic_vector(3 downto 0);
     signal data4    : std_logic_vector(3 downto 0);
+    signal data5    : std_logic_vector(3 downto 0);
+    signal data6    : std_logic_vector(3 downto 0);
+    signal data7    : std_logic_vector(3 downto 0);
+    signal data8    : std_logic_vector(3 downto 0);
+    signal minutos  : std_logic_vector(6 downto 0);
+    signal segundos : std_logic_vector(6 downto 0);
     
 begin
     divisor_de_frecuencia : FREQ_DIV Generic map(
@@ -107,10 +124,10 @@ begin
         DATA_IN2 => data2,
         DATA_IN3 => data3,
         DATA_IN4 => data4,
-        DATA_IN5 => "0100",
-        DATA_IN6 => "0101",
-        DATA_IN7 => "0110",
-        DATA_IN8 => "0111",
+        DATA_IN5 => data5,
+        DATA_IN6 => data6,
+        DATA_IN7 => data7,
+        DATA_IN8 => data8,
         SEL => dig_sel2decod_and_mux,
         OUTPUT => mux2dcdr
         );
@@ -140,6 +157,32 @@ begin
         CLK => CLK,
         BCD1 => data3, --Decenas
         BCD2 => data4 --Unidades
+        );
+        
+        
+    conversor_tiempo    : TIME_CONV
+        Generic map(
+            input_width => time_width
+            )
+        Port map(
+            DATA_IN => TIME_DATA,
+            CLK => CLK,
+            MIN => minutos,
+            SEC => segundos
+            );
+            
+    minutes_BCD_conversion  : DEC2BCD Port map(
+        DATA_IN => minutos,
+        CLK => CLK,
+        BCD1 => data5, --Decenas
+        BCD2 => data6 --Unidades
+        );
+        
+    seconds_BCD_conversion  : DEC2BCD Port map(
+        DATA_IN => segundos,
+        CLK => CLK,
+        BCD1 => data7, --Decenas
+        BCD2 => data8 --Unidades
         );
 
 end Structural;
