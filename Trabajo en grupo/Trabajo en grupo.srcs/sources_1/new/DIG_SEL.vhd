@@ -10,7 +10,9 @@ entity DIG_SEL is
         );
     port (
         CLK      : in std_logic;
-        UINT_SEL : out unsigned (DIGITS_RANGE-1 downto 0) -- Valor codificado en entero sin signo del digito seleccionado para la entrada de seleccion del multiplexor
+        RESET    : in std_logic;
+        UINT_SEL : out std_logic_vector (DIGITS_RANGE-1 downto 0); -- Valor codificado en entero sin signo del digito seleccionado para la entrada de seleccion del multiplexor
+        BIN_SEL  : out std_logic_vector (DIGITS-1 downto 0)
     );
 end DIG_SEL;
 
@@ -19,12 +21,22 @@ architecture Behavioral of DIG_SEL is
 begin
     process(CLK)
     begin
-        if rising_edge(CLK) then
+        if (RESET = '1') then
+            contador <= 0;
+        elsif rising_edge(CLK) then
             contador <= contador + 1;
             if (contador >= DIGITS) then
                 contador <= 0;
             end if;
         end if;
     end process;
-    UINT_SEL <= to_unsigned(contador, DIGITS_RANGE);
+    UINT_SEL <= std_logic_vector(to_unsigned(contador, DIGITS_RANGE));
+    
+    
+    asignacion_salida: process
+    begin
+        BIN_SEL <= (others => '0');
+        BIN_SEL(contador) <= '1';
+    end process;
+        
 end Behavioral;

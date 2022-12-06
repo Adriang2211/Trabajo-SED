@@ -7,7 +7,8 @@ entity FREQ_DIV is
         DIVIDE  : positive := 10
     );
     Port ( 
-        CLK_IN : in STD_LOGIC;
+        CLK_IN  : in STD_LOGIC;
+        RESET   : in std_logic;
         CLK_OUT : out STD_LOGIC
         );
 end FREQ_DIV;
@@ -18,7 +19,9 @@ begin
     process (CLK_IN)
     begin
         CLK_OUT <= '0';
-        if (rising_edge(CLK_IN)) then
+        if (RESET = '1') then
+            counter <= 0;
+        elsif (rising_edge(CLK_IN)) then
             counter <= counter +1;
             if (counter = DIVIDE) then
                 counter <= 0;
