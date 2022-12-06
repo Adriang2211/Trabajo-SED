@@ -46,7 +46,7 @@ begin
           
         );
   
-    process(CLK, RESET,LOAD_ENABLE)
+   up_down_counter: process(CLK, RESET,LOAD_ENABLE)
      variable ceros: unsigned(LOAD'length-1 downto 0):= (others=>'0');
          begin 
                 if RESET='1' THEN
