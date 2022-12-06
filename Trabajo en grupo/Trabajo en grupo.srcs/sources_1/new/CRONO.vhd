@@ -5,10 +5,12 @@ use IEEE.NUMERIC_STD.ALL;
 entity CRONO is
     Generic (
         in_time_width : positive := 7; -- Ancho para minutos
-        out_time_width : positive := 13 -- Ancho para segundos
+        out_time_width : positive := 13; -- Ancho para segundos
+       conversion: positive:=1
     );
     Port ( 
-        LOAD     : in  UNSIGNED (in_time_width-1 downto 0); -- Tiempo en minutos
+        UP_INC:in  STD_LOGIC;
+        DOWN_INC:in  STD_LOGIC;
         UP_NDOWN : in  STD_LOGIC; -- Habilitar cuenta hacia arriba o hacia abajo (salida negada)
         CE       : in  STD_LOGIC; -- Count enable
         CLK      : in  STD_LOGIC; -- Señal de reloj
@@ -21,6 +23,7 @@ entity CRONO is
 end CRONO;
 
 architecture Behavioral of CRONO is
+    signal Load: UNSIGNED (in_time_width-1 downto 0);
     signal load_i : unsigned(LOAD'RANGE);
     signal count_i: unsigned(Times'range);
     signal clk_1_sec: std_logic ;
@@ -33,6 +36,18 @@ architecture Behavioral of CRONO is
         CLK_OUT : out STD_LOGIC
         );
   end component;
+  
+   component INCREMENT is 
+    generic(
+   out_width :positive := 7; 
+   conversion: positive:=4 -- conversion para conseguir que una pulsacion implique cuatro en la salida
+);
+    Port ( ENTRY_UP : in STD_LOGIC; --'1' equals +1
+           ENTRY_DOWN: in STD_LOGIC; --'1' equals -1
+            CLK: in STD_LOGIC;
+            RESET: in std_logic ;
+           OUTPUT : out unsigned (out_width-1 downto 0));
+   end component;
     --introducir el divisor de frecuencia para clk, utilizar esa salida donde clocklla .
 begin
    
@@ -43,9 +58,19 @@ begin
         port map(
             CLK_IN=>CLK,
             CLK_OUT=>clk_1_sec
-          
+             );
+  increment_load: INCREMENT
+        generic map(
+           out_width => out_time_width, 
+   conversion=>conversion
+        )
+        port map(
+            ENTRY_UP=>UP_INC,
+            ENTRY_DOWN=>DOWN_INC,
+            CLK=>CLK,
+            RESET=>RESET,
+            OUTPUT=>LOAD
         );
-  
    up_down_counter: process(CLK, RESET,LOAD_ENABLE)
      variable ceros: unsigned(LOAD'length-1 downto 0):= (others=>'0');
          begin 
