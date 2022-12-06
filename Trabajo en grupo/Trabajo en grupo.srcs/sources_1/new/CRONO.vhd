@@ -74,6 +74,7 @@ begin
    up_down_counter: process(CLK, RESET,LOAD_ENABLE)
      variable ceros: unsigned(LOAD'length-1 downto 0):= (others=>'0');
          begin 
+         
                 if RESET='1' THEN
                     load_i<=(others=>'0');
                      count_i<=(others=>'0');
@@ -84,7 +85,8 @@ begin
                                                             -- la misma dimension por requisitos del programa
                     count_i<=(others=>'0');
                
-                ELSIF rising_edge(clk_1_sec) AND ENABLE='1' THEN 
+                ELSIF rising_edge(clk_1_sec) THEN 
+                 if  CE='1' THEN 
                     if UP_NDOWN='1' THEN 
                          -- CONTADO HACIA ARRIBA DEL RELOJ HASTA LA CARGA
                         count_i<=(count_i+1) mod load_i;
@@ -95,7 +97,8 @@ begin
                                 ending<='1';
                             end if;
                        count_i<=load_i-1;
-                      END IF;  
+                      END IF; 
+                   end if; 
                 END IF;
                 
              TIMES<=count_i;
