@@ -1,23 +1,3 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date: 06.12.2022 18:09:14
--- Design Name: 
--- Module Name: INCREMENT - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
-----------------------------------------------------------------------------------
-
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -40,27 +20,33 @@ generic(
            ENTRY_DOWN: in STD_LOGIC; --'1' equals -1
             CLK: in STD_LOGIC;
             RESET: in std_logic ;
-           OUTPUT : out unsigned (out_width-1 downto 0));
+           OUTP : out unsigned (out_width-1 downto 0));
 end INCREMENT;
 
 architecture Behavioral of INCREMENT is
-signal increment: unsigned(OUTPUT'range);
+
 begin
-    increment<=(others =>'0');
+
+   
         incrementador:process (RESET,CLK)
+            variable increment: integer:=0;
+             variable count: integer:=0;
             begin
                 if Reset='1' then
-                        increment<=(others =>'0');
+                        increment:=0;
+                        count:=0;
                 elsif rising_edge(CLK) then
                     if ENTRY_UP='1' then
-                    increment<=(increment+1)*conversion;
+                    count:=count+1;
+                    increment:=(count)*conversion;
                     end if ;
-                    if ENTRY_DOWN='1' then
-                        increment<=(increment-1)*conversion;
+                    if ENTRY_DOWN='1' and increment>0 then
+                        count:=count-1;
+                        increment:=(count)*conversion;
                     end if ;
                 
                 end if;
-            OUTPUT<= increment;   
+            OUTP<= TO_UNSIGNED (increment,OUTP'length) ;   
             end process;   
 
 end Behavioral;

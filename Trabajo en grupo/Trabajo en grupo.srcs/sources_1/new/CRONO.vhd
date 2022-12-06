@@ -39,14 +39,14 @@ architecture Behavioral of CRONO is
   
    component INCREMENT is 
     generic(
-   out_width :positive := 7; 
-   conversion: positive:=4 -- conversion para conseguir que una pulsacion implique cuatro en la salida
+   out_width :positive ; 
+   conversion: positive -- conversion para conseguir que una pulsacion implique cuatro en la salida
 );
     Port ( ENTRY_UP : in STD_LOGIC; --'1' equals +1
            ENTRY_DOWN: in STD_LOGIC; --'1' equals -1
             CLK: in STD_LOGIC;
             RESET: in std_logic ;
-           OUTPUT : out unsigned (out_width-1 downto 0));
+           OUTP : out unsigned (out_width-1 downto 0));
    end component;
     --introducir el divisor de frecuencia para clk, utilizar esa salida donde clocklla .
 begin
@@ -61,7 +61,7 @@ begin
              );
   increment_load: INCREMENT
         generic map(
-           out_width => out_time_width, 
+           out_width => in_time_width, 
    conversion=>conversion
         )
         port map(
@@ -69,7 +69,7 @@ begin
             ENTRY_DOWN=>DOWN_INC,
             CLK=>CLK,
             RESET=>RESET,
-            OUTPUT=>LOAD
+            OUTP=>LOAD
         );
    up_down_counter: process(CLK, RESET,LOAD_ENABLE)
      variable ceros: unsigned(LOAD'length-1 downto 0):= (others=>'0');
