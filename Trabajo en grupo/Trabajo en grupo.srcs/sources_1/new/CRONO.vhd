@@ -24,7 +24,7 @@ end CRONO;
 
 architecture Behavioral of CRONO is
     signal Load: UNSIGNED (in_time_width-1 downto 0);
-    signal load_i : unsigned(LOAD'RANGE);
+    signal load_i : unsigned(Times'range);
     signal count_i: unsigned(Times'range);
     signal clk_1_sec: std_logic ;
   component FREQ_DIV is
@@ -79,7 +79,9 @@ begin
                      count_i<=(others=>'0');
                
                ELSIF LOAD_ENABLE ='1'  THEN 
-                    load_i<=LOAD;
+                    load_i(load_i'length-1 downto LOAD'length)<=(others=>'0');
+                    load_i(LOAD'length-1 downto 0)<=LOAD; -- es necesaria esta asignacion debido a que load_i y coun_i deben de tener
+                                                            -- la misma dimension por requisitos del programa
                     count_i<=(others=>'0');
                
                 ELSIF rising_edge(clk_1_sec) AND ENABLE='1' THEN 
