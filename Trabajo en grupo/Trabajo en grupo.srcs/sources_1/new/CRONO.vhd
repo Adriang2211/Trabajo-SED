@@ -24,9 +24,13 @@ architecture Behavioral of CRONO is
     signal load_i : unsigned(LOAD'RANGE);
     signal count_i: unsigned(Times'range);
     
+  
     --introducir el divisor de frecuencia para clk, utilizar esa salida donde clocklla .
 begin
-    process(CLK, RESET)
+   
+  
+    process(CLK, RESET,LOAD_ENABLE)
+     variable ceros: unsigned(LOAD'length-1 downto 0):= (others=>'0');
          begin 
                 if RESET='1' THEN
                     load_i<=(others=>'0');
@@ -42,12 +46,16 @@ begin
                         count_i<=(count_i+1) mod load_i;
                     
                     ELSE --CONTADO HACIA ABAJO
-                       -- load_i<=
+                       load_i<=load_i-1;
+                            if load_i=ceros then
+                                ending<='1';
+                            end if;
+                       count_i<=load_i-1;
                       END IF;  
                 END IF;
                 
              TIMES<=count_i;
-    end process
+    end process;
 
 
 end Behavioral;
