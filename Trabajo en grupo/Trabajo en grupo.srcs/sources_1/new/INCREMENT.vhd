@@ -21,14 +21,14 @@ generic(
            ENTRY_DOWN: in STD_LOGIC; --'1' equals -1
             CLK: in STD_LOGIC;
             RESET: in std_logic ;
+            ENABLE: in std_logic;
            OUTP : out unsigned (out_width-1 downto 0));
 end INCREMENT;
 
 architecture Behavioral of INCREMENT is
 
 begin
-
-   
+  
         incrementador:process (RESET,CLK)
             variable increment: integer:=0;
              variable count: integer:=0;
@@ -36,7 +36,7 @@ begin
                 if Reset='1' then
                         increment:=0;
                         count:=0;
-                elsif rising_edge(CLK) then
+                elsif rising_edge(CLK) and ENABLE='1' then
                     if ENTRY_UP='1' and ENTRY_DOWN='0' AND increment<maximo then
                     count:=count+1;
                     increment:=(count)*conversion;
