@@ -23,7 +23,7 @@ begin
             counter <= 0;
         elsif (rising_edge(CLK_IN)) then
             counter <= counter +1;
-            if (counter = DIVIDE) then
+            if (counter = (DIVIDE-1)) then
                 counter <= 0;
                 CLK_OUT <= '1';
             end if;
