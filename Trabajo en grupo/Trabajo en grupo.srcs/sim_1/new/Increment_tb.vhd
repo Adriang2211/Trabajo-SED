@@ -37,7 +37,7 @@ end Increment_tb;
 
 architecture Behavioral of Increment_tb is
   CONSTANT OUT_WIDTH: POSITIVE:= 13;
-  CONSTANT CONVERSION: POSITIVE:=  4;
+  CONSTANT CONVERSION: POSITIVE:=  5;
    constant CLKPeriod: time:=100 ns;
   SIGNAL      ENTRY_UP :  STD_LOGIC; --'1' equals +1
    SIGNAL        ENTRY_DOWN: STD_LOGIC; --'1' equals -1
@@ -48,7 +48,8 @@ architecture Behavioral of Increment_tb is
 COMPONENT INCREMENT IS 
 generic(
   out_width  :positive := 7; 
-   conversion: positive:=4 -- conversion para conseguir que una pulsacion implique cuatro en la salida
+   conversion: positive:=4;
+   MAXIMO: POSITIVE:=16 -- conversion para conseguir que una pulsacion implique cuatro en la salida
 );
     Port ( ENTRY_UP : in STD_LOGIC; --'1' equals +1
            ENTRY_DOWN: in STD_LOGIC; --'1' equals -1
@@ -63,7 +64,8 @@ begin
 INCREMENT_TB : INCREMENT
     GENERIC MAP(
               out_width =>OUT_WIDTH,
-              conversion=>CONVERSION
+              conversion=>CONVERSION,
+              MAXIMO=>15
               
     )
     PORT MAP(

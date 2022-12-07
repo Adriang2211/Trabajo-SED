@@ -6,7 +6,8 @@ entity CRONO is
     Generic (
         in_time_width : positive := 7; -- Ancho para minutos
         out_time_width : positive := 13; -- Ancho para segundos
-       conversion: positive:=1
+       conversion: positive:=30;
+        max_time: positive:=5940
     );
     Port ( 
         UP_INC:in  STD_LOGIC;
@@ -40,7 +41,8 @@ architecture Behavioral of CRONO is
    component INCREMENT is 
     generic(
    out_width :positive ; 
-   conversion: positive -- conversion para conseguir que una pulsacion implique cuatro en la salida
+   conversion: positive;
+   maximo: positive -- conversion para conseguir que una pulsacion implique cuatro en la salida
 );
     Port ( ENTRY_UP : in STD_LOGIC; --'1' equals +1
            ENTRY_DOWN: in STD_LOGIC; --'1' equals -1
@@ -62,7 +64,8 @@ begin
   increment_load: INCREMENT
         generic map(
            out_width => in_time_width, 
-   conversion=>conversion
+   conversion=>conversion,
+            maximo=>max_time
         )
         port map(
             ENTRY_UP=>UP_INC,

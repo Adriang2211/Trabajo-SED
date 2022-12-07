@@ -14,7 +14,8 @@ use IEEE.NUMERIC_STD.ALL;
 entity INCREMENT is
 generic(
    out_width :positive := 7; 
-   conversion: positive:=4 -- conversion para conseguir que una pulsacion implique cuatro en la salida
+   conversion: positive:=4;
+   maximo: positive:=16 -- conversion para conseguir que una pulsacion implique cuatro en la salida
 );
     Port ( ENTRY_UP : in STD_LOGIC; --'1' equals +1
            ENTRY_DOWN: in STD_LOGIC; --'1' equals -1
@@ -36,11 +37,12 @@ begin
                         increment:=0;
                         count:=0;
                 elsif rising_edge(CLK) then
-                    if ENTRY_UP='1' then
+                    if ENTRY_UP='1' and ENTRY_DOWN='0' AND increment<maximo then
                     count:=count+1;
                     increment:=(count)*conversion;
+                        
                     end if ;
-                    if ENTRY_DOWN='1' and increment>0 then
+                    if ENTRY_DOWN='1'AND ENTRY_UP='0' and increment>0 then
                         count:=count-1;
                         increment:=(count)*conversion;
                     end if ;
