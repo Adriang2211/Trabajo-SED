@@ -6,7 +6,10 @@ use IEEE.NUMERIC_STD.ALL;
 entity MODOS is
     Generic (
         speed_width : positive := 4;
-        incl_width  : positive := 4
+        incl_width  : positive := 4;
+        conversion_speed : positive := 1;
+        conversion_incl : positive := 1;
+        max : positive := 15
     );
     Port ( 
         SPEED_UP   : in  STD_LOGIC; -- Boton para subir de nivel de velocidad
@@ -24,52 +27,94 @@ entity MODOS is
 end MODOS;
 
 architecture Structural of MODOS is
-    component LEVEL_CTRL is
-        Generic(
-            lv_width : positive := 4
-        );
+
+component INCREMENT is 
+    generic(
+   out_width :positive ; 
+   conversion: positive;
+    maximo: positive -- conversion para conseguir que una pulsacion implique cuatro en la salida
+);
+    Port ( ENTRY_UP : in STD_LOGIC; --'1' equals +1
+           ENTRY_DOWN: in STD_LOGIC; --'1' equals -1
+            CLK: in STD_LOGIC;
+            RESET: in std_logic ;
+           OUTP : out unsigned (out_width-1 downto 0));
+   end component;
+   begin 
+   
+   velocidad : INCREMENT 
+    generic map (
+        out_width => speed_width,
+        conversion => conversion_speed,
+        maximo => max
+    )
+    port map (
+        ENTRY_UP => SPEED_UP,
+        ENTRY_DOWN => SPEED_DOWN,
+        CLK => CLK,
+        RESET => RESET,
+        OUTP => SPEED
+    );
     
-        Port ( 
-            UP         : in  STD_LOGIC; 
-            DOWN       : in  STD_LOGIC; 
-            CLK        : in  STD_LOGIC; 
-            RESET      : in  STD_LOGIC; 
-            CE         : in  STD_LOGIC; 
-            LEVEL      : out UNSIGNED (lv_width-1 downto 0)
-        );
-    end component LEVEL_CTRL;
+   inclinacion : INCREMENT 
+    generic map (
+        out_width => incl_width,
+        conversion => conversion_incl,
+        maximo => max
+    )
+    port map (
+        ENTRY_UP => INCL_UP,
+        ENTRY_DOWN => INCL_DOWN,
+        CLK => CLK,
+        RESET => RESET,
+        OUTP => INCL
+    );
+--    component LEVEL_CTRL is
+--        Generic(
+--            lv_width : positive := 4
+--        );
+    
+--        Port ( 
+--            UP         : in  STD_LOGIC; 
+--            DOWN       : in  STD_LOGIC; 
+--            CLK        : in  STD_LOGIC; 
+--            RESET      : in  STD_LOGIC; 
+--            CE         : in  STD_LOGIC; 
+--            LEVEL      : out UNSIGNED (lv_width-1 downto 0)
+--        );
+--    end component LEVEL_CTRL;
     
 
-begin
-    spd : if SPEED_UP = '1' or SPEED_DOWN = '1' generate
-    inst_S : LEVEL_CTRL
-    generic map (
-        lv_width => speed_width
-    )
-    port map (
-        UP => SPEED_UP,
-        DOWN => SPEED_DOWN,
-        CLK => CLK,
-        RESET => RESET,
-        CE => ENABLE,
-        LEVEL => SPEED
-    );
-    end generate spd;
+--begin
+--    spd : if SPEED_UP = '1' or SPEED_DOWN = '1' generate
+--    inst_S : LEVEL_CTRL
+--    generic map (
+--        lv_width => speed_width
+--    )
+--    port map (
+--        UP => SPEED_UP,
+--        DOWN => SPEED_DOWN,
+--        CLK => CLK,
+--        RESET => RESET,
+--        CE => ENABLE,
+--        LEVEL => SPEED
+--    );
+--    end generate spd;
     
-    inc : if INCL_UP = '1' or INCL_DOWN = '1' generate
-    inst_I : LEVEL_CTRL
-    generic map (
-        lv_width => incl_width
-    )
-    port map (
-        UP => INCL_UP,
-        DOWN => INCL_DOWN,
-        CLK => CLK,
-        RESET => RESET,
-        CE => ENABLE,
-        LEVEL => INCL
-    );
-    end generate inc;
+--    inc : if INCL_UP = '1' or INCL_DOWN = '1' generate
+--    inst_I : LEVEL_CTRL
+--    generic map (
+--        lv_width => incl_width
+--    )
+--    port map (
+--        UP => INCL_UP,
+--        DOWN => INCL_DOWN,
+--        CLK => CLK,
+--        RESET => RESET,
+--        CE => ENABLE,
+--        LEVEL => INCL
+--    );
+--    end generate inc;
     
     
 end Structural;
