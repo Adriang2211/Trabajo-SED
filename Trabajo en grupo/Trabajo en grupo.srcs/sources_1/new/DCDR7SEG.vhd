@@ -3,14 +3,14 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_unsigned.ALL;
 
-ENTITY decoder IS
+ENTITY DCDR7SEG IS
     PORT (
         code : IN std_logic_vector(3 DOWNTO 0);
         led : OUT std_logic_vector(6 DOWNTO 0)
         );
-END ENTITY decoder;
+END ENTITY DCDR7SEG;
 
-ARCHITECTURE dataflow OF decoder IS
+ARCHITECTURE dataflow OF DCDR7SEG IS
 BEGIN
     WITH code SELECT
         led <=  "0000001" WHEN "0000",

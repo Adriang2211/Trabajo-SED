@@ -104,7 +104,7 @@ architecture Structural of DISP_CRTL is
     
 begin
     divisor_de_frecuencia : FREQ_DIV Generic map(
-        DIVIDE => 100
+        DIVIDE => 10
         )
         Port map(
             CLK_IN => CLK,

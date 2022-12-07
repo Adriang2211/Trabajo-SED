@@ -33,7 +33,7 @@ begin
     UINT_SEL <= std_logic_vector(to_unsigned(contador, DIGITS_RANGE));
     
     
-    asignacion_salida: process
+    asignacion_salida: process (CLK)
     begin
         BIN_SEL <= (others => '0');
         BIN_SEL(contador) <= '1';
