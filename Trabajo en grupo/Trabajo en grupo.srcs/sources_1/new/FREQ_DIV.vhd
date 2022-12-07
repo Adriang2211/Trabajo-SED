@@ -7,7 +7,8 @@ entity FREQ_DIV is
         DIVIDE  : positive := 10
     );
     Port ( 
-        CLK_IN : in STD_LOGIC;
+        CLK_IN  : in STD_LOGIC;
+        RESET   : in std_logic;
         CLK_OUT : out STD_LOGIC
         );
 end FREQ_DIV;
@@ -15,12 +16,14 @@ end FREQ_DIV;
 architecture Behavioral of FREQ_DIV is
     signal counter : integer := 0;
 begin
-    process (CLK_IN)
+    process (CLK_IN, RESET)
     begin
         CLK_OUT <= '0';
-        if (rising_edge(CLK_IN)) then
+        if (RESET = '1') then
+            counter <= 0;
+        elsif (rising_edge(CLK_IN)) then
             counter <= counter +1;
-            if (counter = DIVIDE) then
+            if (counter = (DIVIDE-1)) then
                 counter <= 0;
                 CLK_OUT <= '1';
             end if;
