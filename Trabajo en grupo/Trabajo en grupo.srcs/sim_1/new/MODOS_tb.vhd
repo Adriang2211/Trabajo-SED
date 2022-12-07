@@ -17,10 +17,10 @@ architecture Behavioral of MODOS_tb is
         CLK        : in  STD_LOGIC; -- Señal de reloj
         RESET      : in  STD_LOGIC; -- Reset asincrono
         ENABLE     : in  STD_LOGIC; -- Chip enable
-        SPEED      : out UNSIGNED (3 downto 0); -- Al control del motor de velocidad (LED)
-        INCL       : out UNSIGNED (3 downto 0); -- Al control del motor de inclinacion (LED)
-        SPEED_DATA : out UNSIGNED (3 downto 0); -- Dato para mostrar en pantalla (display)
-        INCL_DATA  : out UNSIGNED (3 downto 0)
+        SPEED      : out UNSIGNED (3 downto 0); -- Control del motor de velocidad
+        INCL       : out UNSIGNED (3 downto 0) -- Control del motor de inclinacion
+--        SPEED_DATA : out UNSIGNED (3 downto 0); -- Dato para mostrar en pantalla (display)
+--        INCL_DATA  : out UNSIGNED (3 downto 0)
         );
     end component;
 
@@ -33,8 +33,8 @@ architecture Behavioral of MODOS_tb is
     signal ENABLE     : STD_LOGIC; 
     signal SPEED      : UNSIGNED (3 downto 0);
     signal INCL       : UNSIGNED (3 downto 0);
-    signal SPEED_DATA : UNSIGNED (3 downto 0);
-    signal INCL_DATA  : UNSIGNED (3 downto 0);
+--    signal SPEED_DATA : UNSIGNED (3 downto 0);
+--    signal INCL_DATA  : UNSIGNED (3 downto 0);
     
     constant TbPeriod : time := 10 ns;
     signal TbClock : std_logic := '0';
@@ -51,9 +51,9 @@ begin
         RESET => RESET,
         ENABLE => ENABLE,
         SPEED => SPEED,
-        INCL => INCL,
-        SPEED_DATA => SPEED_DATA,
-        INCL_DATA => INCL_DATA        
+        INCL => INCL
+--        SPEED_DATA => SPEED_DATA,
+--        INCL_DATA => INCL_DATA        
     );
 
     -- Clock generation
@@ -84,13 +84,14 @@ begin
             INCL_DOWN <= '0';
             INCL_UP <= '1';
         wait for 4.5 * TbPeriod;
-            SPEED_DOWN <= '1';
-            SPEED_UP <= '0';
             INCL_UP <= '0';
         wait for 5 * TbPeriod;
             ENABLE<= '0';
-        wait for 1.5 * TbPeriod;
+        wait for 2 * TbPeriod;           
             ENABLE<= '1';
+        wait for 10.5 * TbPeriod;
+            SPEED_DOWN <= '1';
+            SPEED_UP <= '0';
         wait for 4.5 * TbPeriod;
             SPEED_DOWN <= '0';
             INCL_DOWN <= '1';
