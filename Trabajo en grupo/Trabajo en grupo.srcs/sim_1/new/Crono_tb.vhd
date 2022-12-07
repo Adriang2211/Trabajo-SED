@@ -36,8 +36,6 @@ entity Crono_tb is
 end Crono_tb;
 
 architecture Behavioral of Crono_tb is
-signal 
-si
 
 
 begin
