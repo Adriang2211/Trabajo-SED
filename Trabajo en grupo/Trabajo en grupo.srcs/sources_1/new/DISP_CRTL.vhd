@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.all;
 
-entity DISP_CRTL is
+entity DISP_CTRL is
 
     generic(
         speed_width : positive := 4;    -- Número de bits de los datos de velocidad
@@ -20,9 +20,9 @@ entity DISP_CRTL is
            CLK          : in STD_LOGIC;                                 -- Señal de reloj
            RESET        : in std_logic);                                -- Señal de RESET asincrono
            
-end DISP_CRTL;
+end DISP_CTRL;
 
-architecture Structural of DISP_CRTL is
+architecture Structural of DISP_CTRL is
     component FREQ_DIV generic(
         DIVIDE  : positive := 10
     );
