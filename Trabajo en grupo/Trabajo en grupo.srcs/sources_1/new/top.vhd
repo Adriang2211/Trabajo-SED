@@ -25,7 +25,7 @@ entity top is
         START       : in std_logic;                                     -- Para que la cinta comience a funcionar  
         SPEED       : out std_logic_vector (speed_width - 1 downto 0);  -- Al control del motor de velocidad
         INCL        : out std_logic_vector (incl_width - 1 downto 0);   -- Al control del motor de inclinacion
-        BCD_DATA    : out std_logic_vector (7 downto 0);                -- Salida datos a los displays
+        BCD_DATA    : out std_logic_vector (6 downto 0);                -- Salida datos a los displays
         BCD_SEL     : out std_logic_vector (digits - 1 downto 0)        -- Seleccion del digito
     );
 end top;

@@ -40,7 +40,7 @@ entity EDGEDTCTR is
 end EDGEDTCTR;
 
 architecture Behavioral of EDGEDTCTR is
-signal sreg: std_logic_vector (1 downto 0);
+signal sreg: std_logic_vector (2 downto 0);
 begin
     process (Reset,CLK)
     begin
