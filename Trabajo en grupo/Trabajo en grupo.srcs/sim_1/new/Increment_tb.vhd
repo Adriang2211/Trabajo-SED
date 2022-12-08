@@ -38,7 +38,7 @@ end Increment_tb;
 architecture Behavioral of Increment_tb is
   CONSTANT OUT_WIDTH: POSITIVE:= 13;
   CONSTANT CONVERSION: POSITIVE:=  5;
-   constant CLKPeriod: time:=100 ns;
+   constant CLKPeriod: time:=10 ns;
   SIGNAL      ENTRY_UP :  STD_LOGIC; --'1' equals +1
    SIGNAL        ENTRY_DOWN: STD_LOGIC; --'1' equals -1
    signal         CLK:  STD_LOGIC;
