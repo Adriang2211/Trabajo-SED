@@ -19,28 +19,35 @@ entity MODOS is
         CLK        : in  STD_LOGIC; -- Señal de reloj
         RESET      : in  STD_LOGIC; -- Reset asincrono
         ENABLE     : in  STD_LOGIC; -- Chip enable
-        SPEED      : out UNSIGNED (speed_width-1 downto 0); -- Al control del motor de velocidad (LED)
-        INCL       : out UNSIGNED (incl_width-1 downto 0); -- Al control del motor de inclinacion (LED)
+        SPEED      : out UNSIGNED (speed_width-1 downto 0); -- Control del motor de velocidad 
+        INCL       : out UNSIGNED (incl_width-1 downto 0); -- Control del motor de inclinacion 
         SPEED_DATA : out UNSIGNED (speed_width-1 downto 0); -- Dato para mostrar en pantalla (display)
         INCL_DATA  : out UNSIGNED (incl_width-1 downto 0) -- Dato para mostrar en pantalla (display)
     );
 end MODOS;
 
-architecture Structural of MODOS is
+architecture Behavioral of MODOS is
 
 component INCREMENT is 
-    generic(
-   out_width :positive ; 
-   conversion: positive;
-    maximo: positive -- conversion para conseguir que una pulsacion implique cuatro en la salida
-);
-    Port ( ENTRY_UP : in STD_LOGIC; --'1' equals +1
-           ENTRY_DOWN: in STD_LOGIC; --'1' equals -1
-            CLK: in STD_LOGIC;
-            RESET: in std_logic ;
-           OUTP : out unsigned (out_width-1 downto 0));
-   end component;
-   begin 
+    Generic (
+        out_width :positive ; 
+        conversion: positive;
+        maximo: positive
+    );
+    Port ( 
+        ENTRY_UP   : in  STD_LOGIC; --'1' equals +1
+        ENTRY_DOWN : in  STD_LOGIC; --'1' equals -1
+        CLK        : in  STD_LOGIC;
+        RESET      : in  STD_LOGIC;
+        ENABLE     : in  STD_LOGIC;
+        OUTP       : out UNSIGNED (out_width-1 downto 0)
+    );
+end component;
+
+    signal speed_level : unsigned (speed_width-1 downto 0);
+    signal incl_level : unsigned (incl_width-1 downto 0); 
+
+begin 
    
    velocidad : INCREMENT 
     generic map (
@@ -53,9 +60,10 @@ component INCREMENT is
         ENTRY_DOWN => SPEED_DOWN,
         CLK => CLK,
         RESET => RESET,
-        OUTP => SPEED
+        ENABLE => ENABLE,
+        OUTP => speed_level
     );
-    
+        
    inclinacion : INCREMENT 
     generic map (
         out_width => incl_width,
@@ -67,54 +75,31 @@ component INCREMENT is
         ENTRY_DOWN => INCL_DOWN,
         CLK => CLK,
         RESET => RESET,
-        OUTP => INCL
+        ENABLE => ENABLE,
+        OUTP => incl_level
     );
---    component LEVEL_CTRL is
---        Generic(
---            lv_width : positive := 4
---        );
     
---        Port ( 
---            UP         : in  STD_LOGIC; 
---            DOWN       : in  STD_LOGIC; 
---            CLK        : in  STD_LOGIC; 
---            RESET      : in  STD_LOGIC; 
---            CE         : in  STD_LOGIC; 
---            LEVEL      : out UNSIGNED (lv_width-1 downto 0)
---        );
---    end component LEVEL_CTRL;
-    
+    process (CLK)
+    begin
+    if rising_edge (CLK) then
+        if ENABLE = '1' then
+            SPEED_DATA <= speed_level;
+            SPEED <= speed_level / conversion_speed;
+        else 
+            SPEED_DATA <= (others => '0');
+            SPEED <= (others => '0');
+        end if;
+        
+        if ENABLE = '1' then
+            INCL_DATA <= incl_level;
+            INCL <= incl_level / conversion_incl;
+        else 
+            INCL_DATA <= (others => '0');
+            INCL <= (others => '0');
+        end if;
+    end if;
+    end process;
+     
 
---begin
---    spd : if SPEED_UP = '1' or SPEED_DOWN = '1' generate
---    inst_S : LEVEL_CTRL
---    generic map (
---        lv_width => speed_width
---    )
---    port map (
---        UP => SPEED_UP,
---        DOWN => SPEED_DOWN,
---        CLK => CLK,
---        RESET => RESET,
---        CE => ENABLE,
---        LEVEL => SPEED
---    );
---    end generate spd;
     
---    inc : if INCL_UP = '1' or INCL_DOWN = '1' generate
---    inst_I : LEVEL_CTRL
---    generic map (
---        lv_width => incl_width
---    )
---    port map (
---        UP => INCL_UP,
---        DOWN => INCL_DOWN,
---        CLK => CLK,
---        RESET => RESET,
---        CE => ENABLE,
---        LEVEL => INCL
---    );
---    end generate inc;
-    
-    
-end Structural;
+end Behavioral;
