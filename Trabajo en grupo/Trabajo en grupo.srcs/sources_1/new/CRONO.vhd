@@ -4,7 +4,7 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity CRONO is
     Generic (
-        in_time_width : positive := 7; -- Ancho para minutos
+        in_time_width : positive := 13; -- Ancho para segundos
         out_time_width : positive := 13;
         divide: positive:= 100000000;-- Ancho para segundos
        conversion: positive:=30;
@@ -19,8 +19,8 @@ entity CRONO is
         RESET    : in  STD_LOGIC; -- Reset asincrono
         ENABLE   : in  STD_LOGIC; -- Chip enable en la configuracion 
         LOAD_ENABLE:  IN STD_LOGIC; -- WHEN '1' LOAD 
-        TIMES     : out UNSIGNED (out_time_width-1 downto 0); -- Salda del cronometro en segundos
-        LOAD_OUT: out unsigned (in_time_width-1 downto 0);
+        TIMES     : out STD_LOGIC_VECTOR (out_time_width-1 downto 0); -- Salda del cronometro en segundos
+        LOAD_OUT: out STD_LOGIC_VECTOR (in_time_width-1 downto 0);
         ENDING: out std_logic
     );
 end CRONO;
@@ -121,8 +121,8 @@ begin
                    end if; 
                 END IF;
                 ending<=final;
-             LOAD_OUT<=Load;   
-             TIMES<=count_i;
+             LOAD_OUT<=STD_LOGIC_VECTOR(Load);   
+             TIMES<=STD_LOGIC_VECTOR(count_i);
              
     end process;
 

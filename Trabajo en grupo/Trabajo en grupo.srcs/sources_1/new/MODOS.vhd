@@ -19,10 +19,10 @@ entity MODOS is
         CLK        : in  STD_LOGIC; -- Señal de reloj
         RESET      : in  STD_LOGIC; -- Reset asincrono
         ENABLE     : in  STD_LOGIC; -- Chip enable
-        SPEED      : out UNSIGNED (speed_width-1 downto 0); -- Control del motor de velocidad 
-        INCL       : out UNSIGNED (incl_width-1 downto 0); -- Control del motor de inclinacion 
-        SPEED_DATA : out UNSIGNED (speed_width-1 downto 0); -- Dato para mostrar en pantalla (display)
-        INCL_DATA  : out UNSIGNED (incl_width-1 downto 0) -- Dato para mostrar en pantalla (display)
+        SPEED      : out STD_LOGIC_VECTOR (speed_width-1 downto 0); -- Control del motor de velocidad 
+        INCL       : out STD_LOGIC_VECTOR (incl_width-1 downto 0); -- Control del motor de inclinacion 
+        SPEED_DATA : out STD_LOGIC_VECTOR (speed_width-1 downto 0); -- Dato para mostrar en pantalla (display)
+        INCL_DATA  : out STD_LOGIC_VECTOR (incl_width-1 downto 0) -- Dato para mostrar en pantalla (display)
     );
 end MODOS;
 
@@ -83,16 +83,16 @@ begin
     begin
     if rising_edge (CLK) then
         if ENABLE = '1' then
-            SPEED_DATA <= speed_level;
-            SPEED <= speed_level / conversion_speed;
+            SPEED_DATA <= STD_LOGIC_VECTOR(speed_level);
+            SPEED <= STD_LOGIC_VECTOR(speed_level / conversion_speed);
         else 
             SPEED_DATA <= (others => '0');
             SPEED <= (others => '0');
         end if;
         
         if ENABLE = '1' then
-            INCL_DATA <= incl_level;
-            INCL <= incl_level / conversion_incl;
+            INCL_DATA <= STD_LOGIC_VECTOR(incl_level);
+            INCL <=STD_LOGIC_VECTOR(incl_level / conversion_incl);
         else 
             INCL_DATA <= (others => '0');
             INCL <= (others => '0');
