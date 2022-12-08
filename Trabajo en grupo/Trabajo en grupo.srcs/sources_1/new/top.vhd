@@ -8,11 +8,15 @@ entity top is
         speed_width     : positive := 4;      -- Bits para la comunicacion con el motor
         incl_width      : positive := 4;      -- Bits para la comunicacion con el motor
         digits          : positive := 8;      -- Numero de displays de 7 segmentos de la placa
+         digits_range          : positive := 3;
         in_time_width : positive := 13; -- Ancho para segundos de carga
         out_time_width : positive := 13;
         divide: positive:= 100000000;-- Ancho para segundos
         conversion: positive:=30;
-        max_time: positive:=5940 --El valor corresponde a 99 Minutos, valor maximo mostrable
+        max_time: positive:=5940; --El valor corresponde a 99 Minutos, valor maximo mostrable
+        conversion_speed : positive := 1;
+        conversion_incl : positive := 1;
+        max : positive := 15
     );
     port(
         BUTTONS     : in std_logic_vector(button_width-1 downto 0);     --Botones de la placa
@@ -22,7 +26,7 @@ entity top is
         SPEED       : out std_logic_vector (speed_width - 1 downto 0);  -- Al control del motor de velocidad
         INCL        : out std_logic_vector (incl_width - 1 downto 0);   -- Al control del motor de inclinacion
         BCD_DATA    : out std_logic_vector (7 downto 0);                -- Salida datos a los displays
-        BDC_SEL     : out std_logic_vector (digits - 1 downto 0)        -- Seleccion del digito
+        BCD_SEL     : out std_logic_vector (digits - 1 downto 0)        -- Seleccion del digito
     );
 end top;
 
@@ -227,7 +231,46 @@ begin
         DATA_OUTPUT =>MUX_TO_DISP,
         SEL      => S_MUX_SEL
     );
+    MODOS_C: MODOS
+      Generic Map(
+        speed_width => speed_width,
+        incl_width  => incl_width,
+        conversion_speed =>   conversion_speed,
+        conversion_incl => conversion_incl,
+        max => max 
+    )
+    Port Map ( 
+        SPEED_UP => edge_to_comp(0),
+        SPEED_DOWN =>edge_to_comp(3),
+        INCL_UP    => edge_to_comp(2),
+        INCL_DOWN=> edge_to_comp(1),
+        CLK       => CLK,
+        RESET     => RESET,
+        ENABLE    => S_EN_MODOS,
+        SPEED=>SPEED ,
+        INCL      =>  INCL   ,
+        SPEED_DATA=> SPEED_TO_DISP,
+        INCL_DATA  =>INCL_TO_DISP 
+    );
 
-
+    DISP_CTRL_C: DISP_CTRL
+    
+     Generic Map(
+        speed_width =>  speed_width,   -- Número de bits de los datos de velocidad
+        incl_width   =>incl_width ,   -- Número de bits de los datos de inclinación
+        time_width   => out_time_width,   -- Número de bits de los datos de tiempos
+        digits       => digits  ,      -- Número de dígitos de la placa
+        digits_range  => digits_range     -- Rango para la expresion del numero de digitos de la placa en binario
+        )
+        
+    Port Map ( 
+           DISP_SEL      =>BCD_SEL , 
+           DISP_DATA    => BCD_DATA,         
+           SPEED         => SPEED_TO_DISP, 
+           INCL          => INCL_TO_DISP, 
+           TIME_DATA     => MUX_TO_DISP, 
+           CLK          => CLK,                                -- Señal de reloj
+           RESET        => RESET
+           );  
 
 end STRUCTURAL;
