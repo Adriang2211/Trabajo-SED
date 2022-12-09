@@ -37,17 +37,17 @@ end Crono_tb;
 
 architecture Behavioral of Crono_tb is
  CONSTANT OUT_WIDTH: POSITIVE:= 13;
- constant IN_TIME: positive:=10;
+ constant IN_TIME: positive:=13;
   CONSTANT CONVERSION: POSITIVE:=  5;
-  constant maximo: positive:= 20;
+  constant maximo: positive:= 100;
    constant CLKPeriod: time:=10 ns;
-   constant newclk: time:=0.001 ms;
+   constant newclk: time:=0.01 ms;
   SIGNAL      ENTRY_UP :  STD_LOGIC; --'1' equals +1
    SIGNAL        ENTRY_DOWN: STD_LOGIC; --'1' equals -1
    signal         CLK:  STD_LOGIC;
    signal         RESET: std_logic ;
-    SIGNAL       OUTP :  unsigned (out_width-1 downto 0);
-     SIGNAL       LOAD_OUT :  unsigned (IN_TIME-1 downto 0);
+    SIGNAL       OUTP :  STD_LOGIC_VECTOR (out_width-1 downto 0);
+     SIGNAL       LOAD_OUT :  STD_LOGIC_VECTOR (IN_TIME-1 downto 0);
     signal ENABLE: STD_LOGIC;
     signal LOAD_ENABLE:STD_LOGIC;
     signal CE:STD_LOGIC;
@@ -56,7 +56,7 @@ architecture Behavioral of Crono_tb is
 
 component CRONO is
     Generic (
-        in_time_width : positive := 7; -- Ancho para minutos
+        in_time_width : positive := 13; -- Ancho para minutos
         out_time_width : positive := 13;
         divide: positive:= 100000000; -- Ancho para segundos
        conversion: positive:=30;
@@ -71,8 +71,8 @@ component CRONO is
         RESET    : in  STD_LOGIC; -- Reset asincrono
         ENABLE   : in  STD_LOGIC; -- Chip enable en la configuracion 
         LOAD_ENABLE:  IN STD_LOGIC; -- WHEN '1' LOAD 
-        TIMES     : out UNSIGNED (out_time_width-1 downto 0); -- Salda del cronometro en segundos
-        LOAD_OUT: out unsigned (in_time_width-1 downto 0);
+        TIMES     : out STD_LOGIC_VECTOR (out_time_width-1 downto 0); -- Salda del cronometro en segundos
+        LOAD_OUT: out STD_LOGIC_VECTOR (in_time_width-1 downto 0);
         ENDING: out std_logic
     );
 end component;
@@ -83,7 +83,7 @@ crono_tb: CRONO
     generic map(
     in_time_width => IN_TIME,
         out_time_width =>OUT_WIDTH,
-        DIVIDE=>10,--CADA 10MS
+        DIVIDE=>1000,--CADA 10MS
        conversion=>conversion,
         max_time=>maximo
     )
@@ -119,7 +119,7 @@ end process;
 
 LOAD_ENABLE<='0' after 0.05 ms, '1' after 0.1 ms, '0' after 0.33 ms;
 ENABLE<='0' after 0.1 ms,'1' after 0.2 ms;
-CE<= '0' after 0.1 ms, '1' after 0.33 ms;
---reset<= '1' after 3 sec, '0' after 4 sec;
-UP_NDOWN<='0' after 0.1 ms, '1' after 0.5 ms;
+CE<= '0' after 0.1 ms, '1' after 0.32005 ms;
+reset<= '1' after 0.001ms, '0' after 0.3 ms;
+UP_NDOWN<='1' after 0.1 ms, '0' after 0.8 ms;
 end Behavioral;

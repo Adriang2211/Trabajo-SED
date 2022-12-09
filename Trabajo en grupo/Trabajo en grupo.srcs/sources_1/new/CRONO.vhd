@@ -84,7 +84,7 @@ begin
         );
    up_down_counter: process(CLK,clk_1_sec, RESET,LOAD_ENABLE)
      variable ceros: unsigned(LOAD'length-1 downto 0):= (others=>'0');
-     --variable final: std_logic :='0';-- se vcrea una variable para jugar con la logica que implica
+     variable final: std_logic :='0';-- se vcrea una variable para jugar con la logica que implica
      variable maxi: unsigned (Times'range) := to_unsigned (max_time, Times'length);
          begin 
                 ENDING<='0';
@@ -98,12 +98,12 @@ begin
                     load_i<=LOAD; -- es necesaria esta asignacion debido a que load_i y coun_i deben de tener
                                                             -- la misma dimension por requisitos del programa
                    -- count_i<=(others=>'0');
-                    ending<='0';
+                    final:='0';
                 ELSIF rising_edge(clk_1_sec) THEN 
                 IF ENABLE='1' THEN 
                  if  CE='1'  THEN 
                    if UP_NDOWN='1'  THEN 
-                         -- CONTADO HACIA ARRIBA DEL RELOJ HASTA LA CARGA
+                         -- CONTADO HACIA ARRIBA DEL RELOJ HASTA máximo
                         count_i<=(count_i+1);
                             if count_i > maxi-1 then --debido a que count_i es una señal, la comprobación de final debe 
                                                     -- hacerse para un valor anterior ya que así para el siguiente periodo ya valdrá 0
@@ -112,18 +112,19 @@ begin
                                 count_i<=maxi;
                                
                             end if;
-                    ELSIF UP_NDOWN='0' THEN  --CONTADO HACIA ABAJO
+                    ELSIF UP_NDOWN='0' and final='0' THEN  --CONTADO HACIA ABAJO
                        load_i<=load_i-1;
-                            if load_i<=ceros+1 then--debido a que load_i es una señal, la comprobación de final debe 
-                                                   -- hacerse para un valor anterior ya que así para el siguiente periodo ya valdrá 0
-                                ending<='1';
-                            end if;
                        count_i<=load_i;
+                            if load_i<=ceros then--debido a que load_i es una señal, la comprobación de final debe 
+                                                   -- hacerse para un valor anterior ya que así para el siguiente periodo ya valdrá 0
+                                final:='1';
+                            end if;
+                      
                       END IF; 
                    end if; 
                    END IF;
                 END IF;
-                --ending<=final;
+                ending<=final;
            
              
     end process;
