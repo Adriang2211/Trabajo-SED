@@ -18,7 +18,9 @@ entity FSM is
         LOAD_EN_TIME   : out STD_LOGIC; -- Habilitar configuracion de tiempo   
         COUNT_EN_TIME  : out STD_LOGIC; -- Habilitar la cuenta
         CRONO_EN_TIME  : out STD_LOGIC; -- Habilitar CRONO
-        MUX_SEL        : out STD_LOGIC -- Seleccionar o que se visualiza en los displays   
+        MUX_SEL        : out STD_LOGIC;-- Seleccionar o que se visualiza en los displays  
+        leds: out std_logic_vector(6 downto 0)
+         
     );
 end FSM;
 
@@ -82,6 +84,7 @@ begin
     
     output_dec : process (EstadoActual)
     begin
+    leds<= (others =>'0');
         UP_NDOWN <= '0';   
         EN_MODOS <= '0';   
         LOAD_EN_TIME <= '0';  
@@ -91,26 +94,33 @@ begin
         case EstadoActual is
             when CONFIG =>
                 CRONO_EN_TIME <= '1';
+                leds(0)<='1';
             when CONFIG_OK =>
+            leds(1)<='1';
                 CRONO_EN_TIME <= '1';
                 LOAD_EN_TIME <= '1';
             when READY_UP => 
+            leds(2)<='1';
                 MUX_SEL <= '1';
             when FUNCIONA_UP =>
+            leds(3)<='1';
                 MUX_SEL <= '1';
                 EN_MODOS <= '1';
                 UP_NDOWN <= '1';
                 CRONO_EN_TIME <= '1';
                 COUNT_EN_TIME <= '1';
             when READY_DOWN => 
+            leds(4)<='1';
                 MUX_SEL <= '1';
             when FUNCIONA_DOWN =>
+            leds(5)<='1';
                 MUX_SEL <= '1';
                 EN_MODOS <= '1';
                 UP_NDOWN <= '0';
                 CRONO_EN_TIME <= '1';
                 COUNT_EN_TIME <= '1';
             when others =>
+            leds(6)<='1';
                 UP_NDOWN <= '0';   
                 EN_MODOS <= '0';   
                 LOAD_EN_TIME <= '0';  

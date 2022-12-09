@@ -26,7 +26,8 @@ entity top is
         SPEED       : out std_logic_vector (speed_width - 1 downto 0);  -- Al control del motor de velocidad
         INCL        : out std_logic_vector (incl_width - 1 downto 0);   -- Al control del motor de inclinacion
         BCD_DATA    : out std_logic_vector (6 downto 0);                -- Salida datos a los displays
-        BCD_SEL     : out std_logic_vector (digits - 1 downto 0)        -- Seleccion del digito
+        BCD_SEL     : out std_logic_vector (digits - 1 downto 0);        -- Seleccion del digito
+        leds: out std_logic_vector(6 downto 0)
     );
 end top;
 
@@ -46,9 +47,9 @@ architecture STRUCTURAL of top is
     signal INCL_TO_DISP:std_logic_vector(incl_width-1 downto 0);
     signal MUX_TO_DISP:std_logic_vector(out_time_width-1 downto 0);
      
-    component EDGEDTCTR is
+ component EDGEDTCTR is
         Port ( CLK : in STD_LOGIC;
-               SYNC_IN : in STD_LOGIC;
+              SYNC_IN : in STD_LOGIC;
                Reset : in STD_LOGIC;
                EDGE : out STD_LOGIC);
             
@@ -124,6 +125,7 @@ architecture STRUCTURAL of top is
             LOAD_EN_TIME   : out STD_LOGIC; -- Habilitar configuracion de tiempo   
             COUNT_EN_TIME  : out STD_LOGIC; -- Habilitar la cuenta
             CRONO_EN_TIME  : out STD_LOGIC; -- Habilitar CRONO
+            leds: out std_logic_vector(6 downto 0);
             MUX_SEL        : out STD_LOGIC -- Seleccionar o que se visualiza en los displays   
         );
     end component;
@@ -189,13 +191,14 @@ begin
                 BUTTON_BACK    =>edge_to_comp(1), -- Boton para volver a la configuracion
                 BUTTON_UP      =>edge_to_comp(0), -- Boton para seleccionar cuenta hacia arriba
                 BUTTON_DOWN   =>edge_to_comp(3), -- Boton para seleccionar cuenta hacia abajo
-                RESET         =>RESET, -- Reset asincrono
+                RESET         => RESET, -- Reset asincrono
                 CLK            =>CLK, -- Señal de reloj
                 UP_NDOWN       =>S_UP_NDOWN,
                 EN_MODOS       =>S_EN_MODOS,
                 LOAD_EN_TIME  =>S_LOAD_EN_TIME,
                 COUNT_EN_TIME  =>S_COUNT_EN_TIME,
                 CRONO_EN_TIME  =>S_CRONO_EN_TIME,
+                leds=>leds,
                 MUX_SEL       =>S_MUX_SEL
         );
       

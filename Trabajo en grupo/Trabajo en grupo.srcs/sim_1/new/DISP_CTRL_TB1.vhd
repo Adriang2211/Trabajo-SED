@@ -7,7 +7,7 @@ entity DISP_CTRL_TB1 is
 end DISP_CTRL_TB1;
 
 architecture Behavioral of DISP_CTRL_TB1 is
-    component DISP_CRTL
+    component DISP_CTRL
     generic(
         speed_width : positive := 4;    -- Número de bits de los datos de velocidad
         incl_width  : positive := 4;    -- Número de bits de los datos de inclinación
@@ -34,7 +34,7 @@ architecture Behavioral of DISP_CTRL_TB1 is
     signal time_data    : std_logic_vector (12 downto 0);
     signal reset        : std_logic;
 begin
-    test : DISP_CRTL Port map(
+    test : DISP_CTRL Port map(
         DISP_SEL => disp_sel,
         DISP_DATA => disp_data,
         SPEED => speed,

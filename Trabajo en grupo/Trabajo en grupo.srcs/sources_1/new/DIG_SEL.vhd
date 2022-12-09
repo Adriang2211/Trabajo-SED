@@ -25,18 +25,25 @@ begin
             contador <= 0;
         elsif rising_edge(CLK) then
             contador <= contador + 1;
-            if (contador >= DIGITS) then
+            if (contador = DIGITS-1) then
                 contador <= 0;
             end if;
         end if;
+        UINT_SEL <= std_logic_vector(to_unsigned(contador, DIGITS_RANGE));
     end process;
-    UINT_SEL <= std_logic_vector(to_unsigned(contador, DIGITS_RANGE));
+    
     
     
     asignacion_salida: process (CLK)
     begin
-        BIN_SEL <= (others => '0');
-        BIN_SEL(contador) <= '1';
+        if Reset='1' then
+         BIN_SEL <= (others => '1');
+         end if;
+    if rising_edge (CLK) then
+    
+        BIN_SEL <= (others => '1');
+        BIN_SEL(contador) <= '0';
+        end if;
     end process;
         
 end Behavioral;

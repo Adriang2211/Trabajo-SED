@@ -114,7 +114,7 @@ begin
                     ELSIF UP_NDOWN='0' and final='0' THEN  --CONTADO HACIA ABAJO
                        load_i<=load_i-1;
                             if load_i=ceros+1 then--debido a que load_i es una señal, la comprobación de final debe 
-                                                    -- hacerse para un valor anterior ya que así para el siguiente periodo ya valdrá 0
+                                                   -- hacerse para un valor anterior ya que así para el siguiente periodo ya valdrá 0
                                 final:='1';
                             end if;
                        count_i<=load_i-1;
