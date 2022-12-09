@@ -28,9 +28,9 @@ end CRONO;
 architecture Behavioral of CRONO is
     signal Load: UNSIGNED (in_time_width-1 downto 0);
     signal load_i : unsigned(Times'range);--
-    signal count_i: unsigned(Times'range);
+    signal count_i: unsigned(Times'range):=(others=>'0');
     signal clk_1_sec: std_logic ;
-    
+    signal ending_i: std_logic;
   component FREQ_DIV is
      Generic(
         DIVIDE  : positive := 10
@@ -84,49 +84,50 @@ begin
         );
    up_down_counter: process(CLK,clk_1_sec, RESET,LOAD_ENABLE)
      variable ceros: unsigned(LOAD'length-1 downto 0):= (others=>'0');
-     variable final: std_logic :='0';-- se vcrea una variable para jugar con la logica que implica
+     --variable final: std_logic :='0';-- se vcrea una variable para jugar con la logica que implica
      variable maxi: unsigned (Times'range) := to_unsigned (max_time, Times'length);
          begin 
-         
+                ENDING<='0';
                 if RESET='1' THEN
                     load_i<=(others=>'0');
                      count_i<=(others=>'0');
-               
+                    ending<='0';
              
                 ELSIF LOAD_ENABLE ='1' and ENABLE='1' THEN
-                    load_i(load_i'length-1 downto LOAD'length)<=(others=>'0');
-                    load_i(LOAD'length-1 downto 0)<=LOAD; -- es necesaria esta asignacion debido a que load_i y coun_i deben de tener
+                    
+                    load_i<=LOAD; -- es necesaria esta asignacion debido a que load_i y coun_i deben de tener
                                                             -- la misma dimension por requisitos del programa
-                    count_i<=(others=>'0');
-                
+                   -- count_i<=(others=>'0');
+                    ending<='0';
                 ELSIF rising_edge(clk_1_sec) THEN 
                 IF ENABLE='1' THEN 
                  if  CE='1'  THEN 
-                   if UP_NDOWN='1' and final='0'THEN 
+                   if UP_NDOWN='1'  THEN 
                          -- CONTADO HACIA ARRIBA DEL RELOJ HASTA LA CARGA
                         count_i<=(count_i+1);
-                            if count_i = maxi-1 then --debido a que count_i es una señal, la comprobación de final debe 
+                            if count_i > maxi-1 then --debido a que count_i es una señal, la comprobación de final debe 
                                                     -- hacerse para un valor anterior ya que así para el siguiente periodo ya valdrá 0
                                                     -- si esta fuese una variable, la cndición de final sería la normal
-                                final:='1';
+                                
+                                count_i<=maxi;
                                
                             end if;
-                    ELSIF UP_NDOWN='0' and final='0' THEN  --CONTADO HACIA ABAJO
+                    ELSIF UP_NDOWN='0' THEN  --CONTADO HACIA ABAJO
                        load_i<=load_i-1;
-                            if load_i=ceros+1 then--debido a que load_i es una señal, la comprobación de final debe 
+                            if load_i<=ceros+1 then--debido a que load_i es una señal, la comprobación de final debe 
                                                    -- hacerse para un valor anterior ya que así para el siguiente periodo ya valdrá 0
-                                final:='1';
+                                ending<='1';
                             end if;
-                       count_i<=load_i-1;
+                       count_i<=load_i;
                       END IF; 
                    end if; 
                    END IF;
                 END IF;
-                ending<=final;
-             LOAD_OUT<=STD_LOGIC_VECTOR(Load);   
-             TIMES<=STD_LOGIC_VECTOR(count_i);
+                --ending<=final;
+           
              
     end process;
 
-
+             LOAD_OUT<=STD_LOGIC_VECTOR(LOAD);   
+             TIMES<=STD_LOGIC_VECTOR(count_i);
 end Behavioral;

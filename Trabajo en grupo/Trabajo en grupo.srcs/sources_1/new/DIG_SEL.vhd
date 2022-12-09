@@ -25,13 +25,13 @@ begin
             contador <= 0;
         elsif rising_edge(CLK) then
             contador <= contador + 1;
-            if (contador = DIGITS-1) then
+            if (contador >= DIGITS-1) then
                 contador <= 0;
             end if;
         end if;
-        UINT_SEL <= std_logic_vector(to_unsigned(contador, DIGITS_RANGE));
+            UINT_SEL <= std_logic_vector(to_unsigned(contador, DIGITS_RANGE));
+
     end process;
-    
     
     
     asignacion_salida: process (CLK)

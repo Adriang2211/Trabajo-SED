@@ -104,7 +104,7 @@ architecture Structural of DISP_CTRL is
     
 begin
     divisor_de_frecuencia : FREQ_DIV Generic map(
-        DIVIDE => 1000
+        DIVIDE => 10000
         )
         Port map(
             CLK_IN => CLK,
