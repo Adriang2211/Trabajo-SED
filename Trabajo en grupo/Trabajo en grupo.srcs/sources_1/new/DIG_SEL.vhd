@@ -29,21 +29,19 @@ begin
                 contador <= 0;
             end if;
         end if;
-            UINT_SEL <= std_logic_vector(to_unsigned(contador, DIGITS_RANGE));
-
     end process;
-    
+ 
     
     asignacion_salida: process (CLK)
     begin
         if Reset='1' then
-         BIN_SEL <= (others => '1');
-         end if;
-    if rising_edge (CLK) then
-    
-        BIN_SEL <= (others => '1');
-        BIN_SEL(contador) <= '0';
-        end if;
-    end process;
+             BIN_SEL <= (others => '1');
+             UINT_SEL <= (others=> '1');   
+        elsif rising_edge (CLK) then
+            BIN_SEL <= (others => '1');
+            BIN_SEL(contador) <= '0';
+            UINT_SEL <= std_logic_vector(to_unsigned(contador, DIGITS_RANGE));   
+            end if;
+        end process;
         
 end Behavioral;
