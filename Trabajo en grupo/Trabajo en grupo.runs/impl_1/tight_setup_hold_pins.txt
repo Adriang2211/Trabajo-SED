@@ -1,0 +1,10 @@
++====================+===================+==========================================================+
+| Launch Setup Clock | Launch Hold Clock | Pin                                                      |
++====================+===================+==========================================================+
+| sys_clk_pin        | sys_clk_pin       | CRONO_C/increment_load/incrementador.increment_reg[30]/D |
+| sys_clk_pin        | sys_clk_pin       | CRONO_C/increment_load/incrementador.increment_reg[26]/D |
+| sys_clk_pin        | sys_clk_pin       | CRONO_C/increment_load/incrementador.increment_reg[31]/D |
+| sys_clk_pin        | sys_clk_pin       | CRONO_C/increment_load/incrementador.increment_reg[24]/D |
+| sys_clk_pin        | sys_clk_pin       | CRONO_C/increment_load/incrementador.increment_reg[29]/D |
+| sys_clk_pin        | sys_clk_pin       | CRONO_C/increment_load/incrementador.increment_reg[27]/D |
++--------------------+-------------------+----------------------------------------------------------+

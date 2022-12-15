@@ -1,0 +1,125 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2022.2 (win64) Build 3671981 Fri Oct 14 05:00:03 MDT 2022
+| Date         : Thu Dec 15 11:56:29 2022
+| Host         : DESKTOP-RTM9HP5 running 64-bit major release  (build 9200)
+| Command      : report_control_sets -verbose -file top_control_sets_placed.rpt
+| Design       : top
+| Device       : xc7a100t
+------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |    47 |
+|    Minimum number of control sets                        |    47 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |   285 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |    47 |
+| >= 0 to < 4        |    38 |
+| >= 4 to < 6        |     1 |
+| >= 6 to < 8        |     1 |
+| >= 8 to < 10       |     0 |
+| >= 10 to < 12      |     0 |
+| >= 12 to < 14      |     1 |
+| >= 14 to < 16      |     0 |
+| >= 16              |     6 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |              39 |           12 |
+| No           | No                    | Yes                    |             129 |           51 |
+| No           | Yes                   | No                     |              28 |           18 |
+| Yes          | No                    | No                     |               4 |            3 |
+| Yes          | No                    | Yes                    |             235 |          100 |
+| Yes          | Yes                   | No                     |               0 |            0 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++------------------------------------------+-------------------------------------------+-----------------------------------------+------------------+----------------+--------------+
+|               Clock Signal               |               Enable Signal               |             Set/Reset Signal            | Slice Load Count | Bel Load Count | Bels / Slice |
++------------------------------------------+-------------------------------------------+-----------------------------------------+------------------+----------------+--------------+
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_1  |                1 |              1 |         1.00 |
+|  FSM_C/FSM_onehot_EstadoActual_reg[1]_17 |                                           | FSM_C/FSM_onehot_EstadoActual_reg[1]_5  |                1 |              1 |         1.00 |
+|  FSM_C/FSM_onehot_EstadoActual_reg[1]_19 |                                           | FSM_C/FSM_onehot_EstadoActual_reg[1]_7  |                1 |              1 |         1.00 |
+|  FSM_C/FSM_onehot_EstadoActual_reg[1]_13 |                                           | FSM_C/FSM_onehot_EstadoActual_reg[1]_1  |                1 |              1 |         1.00 |
+|  FSM_C/FSM_onehot_EstadoActual_reg[1]_20 |                                           | FSM_C/FSM_onehot_EstadoActual_reg[1]_8  |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_21 |                1 |              1 |         1.00 |
+|  FSM_C/FSM_onehot_EstadoActual_reg[1]_21 |                                           | FSM_C/FSM_onehot_EstadoActual_reg[1]_9  |                1 |              1 |         1.00 |
+|  CLK_OUT                                 |                                           |                                         |                1 |              1 |         1.00 |
+|  FSM_C/FSM_onehot_EstadoActual_reg[1]_22 |                                           | FSM_C/FSM_onehot_EstadoActual_reg[1]_10 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_0  |                1 |              1 |         1.00 |
+|  FSM_C/FSM_onehot_EstadoActual_reg[1]_23 |                                           | FSM_C/FSM_onehot_EstadoActual_reg[1]_11 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_10 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_11 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_12 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_15 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_16 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_18 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_2  |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_17 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_19 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_14 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_13 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_20 |                1 |              1 |         1.00 |
+|  FSM_C/FSM_onehot_EstadoActual_reg[1]_14 |                                           | FSM_C/FSM_onehot_EstadoActual_reg[1]_2  |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_22 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_23 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_24 |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_8  |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_9  |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_3  |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_4  |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_7  |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_6  |                1 |              1 |         1.00 |
+|  CLK_OUT                                 | FSM_C/load_i                              | FSM_C/FSM_onehot_EstadoActual_reg[1]_5  |                1 |              1 |         1.00 |
+|  FSM_C/FSM_onehot_EstadoActual_reg[1]_12 |                                           | FSM_C/FSM_onehot_EstadoActual_reg[1]_0  |                1 |              1 |         1.00 |
+|  FSM_C/FSM_onehot_EstadoActual_reg[1]_15 |                                           | FSM_C/FSM_onehot_EstadoActual_reg[1]_3  |                1 |              1 |         1.00 |
+|  FSM_C/FSM_onehot_EstadoActual_reg[1]_16 |                                           | FSM_C/FSM_onehot_EstadoActual_reg[1]_4  |                1 |              1 |         1.00 |
+|  FSM_C/FSM_onehot_EstadoActual_reg[1]_18 |                                           | FSM_C/FSM_onehot_EstadoActual_reg[1]_6  |                1 |              1 |         1.00 |
+|  CLK_IBUF_BUFG                           | synchs[3].synch/p_0_in                    |                                         |                3 |              4 |         1.33 |
+|  CLK_IBUF_BUFG                           | FSM_C/FSM_onehot_EstadoActual[6]_i_1_n_0  | RESET_IBUF                              |                4 |              7 |         1.75 |
+|  CLK_OUT                                 | FSM_C/FSM_onehot_EstadoActual_reg[4]_1[0] | RESET_IBUF                              |                7 |             13 |         1.86 |
+|  CLK_IBUF_BUFG                           |                                           | FSM_C/FSM_onehot_EstadoActual_reg[6]_0  |                6 |             16 |         2.67 |
+|  CLK_IBUF_BUFG                           |                                           |                                         |               11 |             38 |         3.45 |
+|  UINT_SEL_reg[2]_i_1_n_0                 |                                           | RESET_IBUF                              |               11 |             43 |         3.91 |
+|  CLK_IBUF_BUFG                           | FSM_C/leds_OBUF[0]                        | RESET_IBUF                              |               23 |             62 |         2.70 |
+|  CLK_IBUF_BUFG                           |                                           | RESET_IBUF                              |               40 |             86 |         2.15 |
+|  CLK_IBUF_BUFG                           | FSM_C/E[0]                                | RESET_IBUF                              |               41 |            128 |         3.12 |
++------------------------------------------+-------------------------------------------+-----------------------------------------+------------------+----------------+--------------+
+
+
