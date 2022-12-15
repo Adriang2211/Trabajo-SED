@@ -95,10 +95,11 @@ begin
             when CONFIG =>
                 CRONO_EN_TIME <= '1';
                 leds(0)<='1';
+               LOAD_EN_TIME <= '1';-- CAMBIO CAMBIO CAMBIO CAMBIO 
             when CONFIG_OK =>
             leds(1)<='1';
                 CRONO_EN_TIME <= '1';
-                LOAD_EN_TIME <= '1';
+             --   LOAD_EN_TIME <= '1';
             when READY_UP => 
             leds(2)<='1';
                 MUX_SEL <= '1';

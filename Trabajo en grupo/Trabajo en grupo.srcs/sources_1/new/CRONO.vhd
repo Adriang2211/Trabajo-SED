@@ -79,7 +79,7 @@ begin
             ENTRY_DOWN=>DOWN_INC,
             CLK=>CLK,  
             RESET=>RESET,
-            ENABLE=>ENABLE,
+            ENABLE=>LOAD_ENABLE,--CAMBIO CAMBIO CAMBIO ENABLE POR LOAD ENABLE
             OUTP=>LOAD
         );
    up_down_counter: process(CLK,clk_1_sec, RESET,LOAD_ENABLE)
@@ -93,12 +93,12 @@ begin
                      count_i<=(others=>'0');
                     ending<='0';
              
-                ELSIF LOAD_ENABLE ='1' and ENABLE='1' THEN
+                ELSIF LOAD_ENABLE ='1'  THEN --and ENABLE='1
                     
                     load_i<=LOAD; -- es necesaria esta asignacion debido a que load_i y coun_i deben de tener
                                                             -- la misma dimension por requisitos del programa
                    -- count_i<=(others=>'0');
-                    final:='0';
+                    --final:='0';
                 ELSIF rising_edge(clk_1_sec) THEN 
                 IF ENABLE='1' THEN 
                  if  CE='1'  THEN 
