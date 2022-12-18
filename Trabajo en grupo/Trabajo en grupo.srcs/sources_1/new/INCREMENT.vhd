@@ -26,7 +26,7 @@ begin
         variable increment: integer:=0;
         variable count: integer:=0;
     begin
-        if Reset='1' then
+        if Reset='0' then
             increment:=0;
             count:=0;
         elsif rising_edge(CLK) and ENABLE='1' then

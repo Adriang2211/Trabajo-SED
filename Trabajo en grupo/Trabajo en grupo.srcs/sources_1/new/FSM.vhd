@@ -30,7 +30,7 @@ architecture Behavioral of FSM is
 begin
     state_reg: process (CLK, RESET)
     begin
-        if RESET = '1' then
+        if RESET = '0' then
             EstadoActual <= REPOSO;
         elsif rising_edge (CLK) then
             EstadoActual <= EstadoSiguiente;

@@ -44,7 +44,7 @@ signal sreg: std_logic_vector (2 downto 0);
 begin
     process (Reset,CLK)
     begin
-    if Reset='1' then
+    if Reset='0' then
         sreg<=(others=>'0');
         elsif rising_edge(CLK) then
            

@@ -88,10 +88,10 @@ begin
      variable maxi: unsigned (Times'range) := to_unsigned (max_time, Times'length);
          begin 
                 ENDING<='0';
-                if RESET='1' THEN
+                if RESET='0' THEN
                     load_i<=(others=>'0');
                      count_i<=(others=>'0');
-                    ending<='0';
+                    final:='0';
              
                 ELSIF LOAD_ENABLE ='1'  THEN --and ENABLE='1
                     

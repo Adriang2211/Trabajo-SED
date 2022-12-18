@@ -44,7 +44,7 @@ signal sreg: std_logic_vector (1 downto 0);
 begin
     process (Reset,CLK)
     begin
-    if reset='1' then
+    if reset='0' then
     sreg<=(others=>'0');
         elsif rising_edge(CLK) then
             SYNC_OUT <= sreg(1);

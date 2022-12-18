@@ -19,7 +19,7 @@ begin
     process (CLK_IN, RESET)
     begin
         CLK_OUT <= '0';
-        if (RESET = '1') then
+        if (RESET = '0') then
             counter <= 0;
         elsif (rising_edge(CLK_IN)) then
             counter <= counter +1;

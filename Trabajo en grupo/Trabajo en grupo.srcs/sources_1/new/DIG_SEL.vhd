@@ -21,7 +21,7 @@ architecture Behavioral of DIG_SEL is
 begin
     process(CLK)
     begin
-        if (RESET = '1') then
+        if (RESET = '0') then
             contador <= 0;
         elsif rising_edge(CLK) then
             contador <= contador + 1;
@@ -34,7 +34,7 @@ begin
     
     asignacion_salida: process (CLK)
     begin
-        if Reset='1' then
+        if Reset='0' then
              BIN_SEL <= (others => '1');
              UINT_SEL <= (others=> '1');   
         elsif rising_edge (CLK) then
