@@ -55,7 +55,6 @@ architecture Behavioral of CRONO is
             ENABLE: in std_logic;
            OUTP : out unsigned (out_width-1 downto 0));
    end component;
-    --introducir el divisor de frecuencia para clk, utilizar esa salida donde clocklla .
 begin
    
    freq_div_1_sec: FREQ_DIV -- generador de un flanco de subida cada 100MHz/DIVIDE
@@ -93,12 +92,10 @@ begin
                      count_i<=(others=>'0');
                     final:='0';
              
-                ELSIF LOAD_ENABLE ='1'  THEN --and ENABLE='1
+                ELSIF LOAD_ENABLE ='1'  THEN 
                     
-                    load_i<=LOAD; -- es necesaria esta asignacion debido a que load_i y coun_i deben de tener
-                                                            -- la misma dimension por requisitos del programa
-                   -- count_i<=(others=>'0');
-                    --final:='0';
+                    load_i<=LOAD; 
+                  
                 ELSIF rising_edge(clk_1_sec) THEN 
                 IF ENABLE='1' THEN 
                  if  CE='1'  THEN 
