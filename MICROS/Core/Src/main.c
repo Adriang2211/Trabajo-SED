@@ -69,9 +69,9 @@ void HAL_ADC_ConvCpltCallback (ADC_HandleTypeDef * hadc){
 }
 int detec_lvl(uint16_t valor)
 {
-	if ( valor >=3700)
+	if ( valor >=4000)
 		return 3;//50<x<100%
-	else if (valor<3700 && valor>=3500)
+	else if (valor<4000 && valor>=3500)
 		return 2;//<=25<x<50%
 	else if(valor<3500 && valor>180)
 		return 1;//<=25%
