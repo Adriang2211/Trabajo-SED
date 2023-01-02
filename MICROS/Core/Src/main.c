@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <string.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,17 +71,17 @@ void lcd_send_data(char data);
 void lcd_send_string(char *str);
 void lcd_clear(void);
 void strdel(char* cadena);
+void info(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 uint16_t ADC_value[2],ADC_buffer[2];//[0] para sensor nivel y [1] para sensor de tierra
 volatile int flag_riego = 0;
-volatile int flag_boton;
+volatile int flag_boton = 0;
+volatile int flag_agua = 0; //Para cuando el deposito de agua esta vacio
 uint32_t media = 0;
-char linea1 [16];
-char linea2 [16];
-char texto_pantalla [32];
+char texto_pantalla [LINES*ROWS];
 int contador_linea=0;
 
 
@@ -173,9 +174,10 @@ int main(void)
   lcd_init();
   HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, 1);
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC_buffer, 2);
-  strcpy(texto_pantalla, "Bienvenido al sistema de riego");
+  strcpy(texto_pantalla, "Bienvenido al   sistema de riego");
   lcd_update(texto_pantalla);
   HAL_Delay(1000); //Para que el mensaje se mantenga en la patanlla 1 segundo
+  lcd_clear();
   HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
@@ -186,18 +188,27 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  //strdel(texto_pantalla);
-	  //strcpy(texto_pantalla, "Pruebas");
-	  //lcd_update(texto_pantalla);
+	  //info();
+	  strdel(texto_pantalla);
+	  char buffer [2];
+	  if (ADC_value[0]/100 > 10)
+	  	  sprintf(buffer, "%i", ADC_value[0]/100);
+	  else
+		  sprintf(buffer, "0%i", ADC_value[0]/100);
+
+	  strcpy(texto_pantalla, "Midiendo...|SistHumedad:");
+	  strcat(texto_pantalla, buffer);
+	  strcat(texto_pantalla, "%|STBY");
+
 	  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
 
-	  //for (int i=0; i<500; i++){
+	  for (int i=0; i<500; i++){
 		//media
-	  //}
+	  }
 	  //if ((nivel humedad < 25%) || (flag_boton == 1)) && (flag_riego == 0){
 	  	  flag_boton = 0;
 	  	  if (detec_lvl(ADC_value[0]) > 1){
-	  		  HAL_NVIC_DisableIRQ(EXTI0_IRQn); //Deshabilitar las interrupciones hasta que termine la espera
+	  		  HAL_NVIC_DisableIRQ(EXTI0_IRQn); //Deshabilitar las interrupciones
 	  		  flag_riego = 1;
 	  		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, 1);
 	  		  HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_2);
@@ -445,7 +456,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 24999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 2000;
+  htim2.Init.Period = 1000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -606,15 +617,26 @@ void lcd_update (char *str){
 
 }
 
-void lcd_clear(void){ //Tambien posiciona el cursor en la esquina superior izquierda
-	for (int i=0; i < ROWS*LINES; i++)
-		lcd_send_data(' ');
-	lcd_send_cmd(0x80); //Posicionar el cursor
+void lcd_clear(void){ //Tambien posiciona el cursor en la esquina superior izquierda. SOLO VALE PARA DISPLAY 16x2
+	lcd_send_cmd(0x80); //Posiciona en el comienzo
+	for (int i=0; i < LINES; i++){ //Recorrer todas las filas
+		for (int j=0; j < ROWS; j++) //Recorrer todas las columnas
+			lcd_send_data(' '); //Poner espacios (borrar todo)
+		lcd_send_cmd(0x0c); //Posicionar en la segunda linea
+	}
+	lcd_send_cmd(0x80); //Posicionar el cursor en el comienzo de nuevo
 }
 
 void strdel(char* cadena){
-	for (int i=0; i < sizeof(cadena); i++)
-		cadena[i] = 0;
+	for (int i=0; i < LINES*ROWS; i++)
+		*cadena++ = ' ';
+}
+
+void info(void){
+	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
+	strdel(texto_pantalla);
+	strcpy(texto_pantalla, "Test");
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn); //Volver a habilitar las interrupciones
 }
 /* USER CODE END 4 */
 
