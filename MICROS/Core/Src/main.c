@@ -83,7 +83,7 @@ volatile int flag_agua = 0; //Para cuando el deposito de agua esta vacio
 uint32_t media = 0;
 char texto_pantalla [LINES*ROWS];
 int contador_linea=0;
-
+int porcentaje;
 
 void HAL_ADC_ConvCpltCallback (ADC_HandleTypeDef * hadc){
 
@@ -104,6 +104,21 @@ int detec_lvl(uint16_t valor)
 	else//0%
 		return 0;
 
+}
+
+int humedad(int medida)
+{	float porce=0;
+float num=0;
+	if(medida<1000)
+	{
+		return 0;// 0% de humedad
+	}
+	else
+	{	num=(medida-1000);
+		porce=((num/(4095-1000))*100);
+		return (int)porce;
+	}
+		//porcentaje de humedad
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
@@ -132,6 +147,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if (htim->Instance == TIM2){
 		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
 		lcd_update(texto_pantalla);
+		HAL_TIM_Base_Start_IT(&htim2);
 	}
 }
 
@@ -176,7 +192,11 @@ int main(void)
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC_buffer, 2);
   strcpy(texto_pantalla, "Bienvenido al   sistema de riego");
   lcd_update(texto_pantalla);
-  HAL_Delay(1000); //Para que el mensaje se mantenga en la patanlla 1 segundo
+  uint32_t tiempo= HAL_GetTick();
+ while( (HAL_GetTick()-tiempo)<100)
+{
+  //Para que el mensaje se mantenga en la patanlla 1 segundo
+ }
   lcd_clear();
   HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
@@ -189,12 +209,13 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  //info();
+	  porcentaje=humedad(ADC_value[1]);
 	  strdel(texto_pantalla);
 	  char buffer [2];
-	  if (ADC_value[0]/100 > 10)
-	  	  sprintf(buffer, "%i", ADC_value[1]/100);
+	  if (porcentaje > 10)
+	  	  sprintf(buffer, "%i", porcentaje);
 	  else
-		  sprintf(buffer, "0%i", ADC_value[1]/100);
+		  sprintf(buffer, "0%i", porcentaje);
 
 	  if (!flag_riego && !flag_agua){
 		  strcpy(texto_pantalla, "Midiendo...|SistHumedad:");
@@ -223,18 +244,19 @@ int main(void)
 
 	  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
 
-	  for (int i=0; i<500; i++){
+	//  for (int i=0; i<500; i++){
 		//media
-	  }
+	 // }
 	  //if ((nivel humedad < 25%) || (flag_boton == 1)) && (flag_riego == 0){
-	  	  flag_boton = 0;
-	  	  if (detec_lvl(ADC_value[0]) > 1){
+	/*  	  flag_boton = 0;
+	  	  if (detec_lvl(ADC_value[0]) > 0){
 	  		  HAL_NVIC_DisableIRQ(EXTI0_IRQn); //Deshabilitar las interrupciones
 	  		  flag_riego = 1;
 	  		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, 1);
 	  		  HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_2);
 	  		  HAL_NVIC_EnableIRQ(EXTI0_IRQn); //Volver a habilitar las interrupciones
 	  	  }
+	  	  */
 	  	  //}
   }
   /* USER CODE END 3 */
@@ -477,7 +499,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 24999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 1000;
+  htim2.Init.Period = 500;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
