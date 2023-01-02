@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -31,6 +31,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define SLAVE_ADDRESS_LCD 0x4E //Dirección LCD
+#define LINES 2 //Dimensiones LCD
+#define ROWS 16 //Dimensiones LCD
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -42,7 +45,10 @@
 ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
 
+I2C_HandleTypeDef hi2c1;
+
 TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
 
@@ -54,8 +60,16 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM1_Init(void);
+static void MX_I2C1_Init(void);
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
-
+void lcd_init();
+void lcd_send_cmd(char cmd);
+void lcd_update(char* str);
+void lcd_send_data(char data);
+void lcd_send_string(char *str);
+void lcd_clear(void);
+void strdel(char* cadena);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -64,6 +78,10 @@ uint16_t ADC_value[2],ADC_buffer[2];//[0] para sensor nivel y [1] para sensor de
 volatile int flag_riego = 0;
 volatile int flag_boton;
 uint32_t media = 0;
+char linea1 [16];
+char linea2 [16];
+char texto_pantalla [32];
+int contador_linea=0;
 
 
 void HAL_ADC_ConvCpltCallback (ADC_HandleTypeDef * hadc){
@@ -108,6 +126,15 @@ void HAL_TIM_OC_DelayElapsedCallback (TIM_HandleTypeDef* htim){
 	}
 
 }
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+	if (htim->Instance == TIM2){
+		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
+		lcd_update(texto_pantalla);
+	}
+}
+
+
 /* USER CODE END 0 */
 
 /**
@@ -126,7 +153,6 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -141,8 +167,16 @@ int main(void)
   MX_DMA_Init();
   MX_ADC1_Init();
   MX_TIM1_Init();
+  MX_I2C1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+  lcd_init();
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, 1);
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC_buffer, 2);
+  strcpy(texto_pantalla, "Bienvenido al sistema de riego");
+  lcd_update(texto_pantalla);
+  HAL_Delay(1000); //Para que el mensaje se mantenga en la patanlla 1 segundo
+  HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -152,17 +186,22 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  for (int i=0; i<500; i++){
+	  //strdel(texto_pantalla);
+	  //strcpy(texto_pantalla, "Pruebas");
+	  //lcd_update(texto_pantalla);
+	  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
+
+	  //for (int i=0; i<500; i++){
 		//media
-	  }
+	  //}
 	  //if ((nivel humedad < 25%) || (flag_boton == 1)) && (flag_riego == 0){
 	  	  flag_boton = 0;
 	  	  if (detec_lvl(ADC_value[0]) > 1){
-	  		HAL_NVIC_DisableIRQ(EXTI0_IRQn); //Deshabilitar las interrupciones hasta que termine la espera
+	  		  HAL_NVIC_DisableIRQ(EXTI0_IRQn); //Deshabilitar las interrupciones hasta que termine la espera
 	  		  flag_riego = 1;
 	  		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, 1);
 	  		  HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_2);
-	  		HAL_NVIC_EnableIRQ(EXTI0_IRQn); //Volver a habilitar las interrupciones
+	  		  HAL_NVIC_EnableIRQ(EXTI0_IRQn); //Volver a habilitar las interrupciones
 	  	  }
 	  	  //}
   }
@@ -277,6 +316,40 @@ static void MX_ADC1_Init(void)
 }
 
 /**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
   * @brief TIM1 Initialization Function
   * @param None
   * @retval None
@@ -352,6 +425,51 @@ static void MX_TIM1_Init(void)
 }
 
 /**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 24999;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 2000;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
+
+}
+
+/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -379,12 +497,24 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PA0 */
   GPIO_InitStruct.Pin = GPIO_PIN_0;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PD13 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
@@ -393,7 +523,99 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void lcd_send_data (char data)
+{
+	char data_u, data_l;
+	uint8_t data_t[4];
+	data_u = (data&0xf0);
+	data_l = ((data<<4)&0xf0);
+	data_t[0] = data_u|0x0D;  //en=1, rs=1
+	data_t[1] = data_u|0x09;  //en=0, rs=1
+	data_t[2] = data_l|0x0D;  //en=1, rs=1
+	data_t[3] = data_l|0x09;  //en=0, rs=1
+	HAL_I2C_Master_Transmit (&hi2c1, SLAVE_ADDRESS_LCD,(uint8_t *) data_t, 4, HAL_MAX_DELAY);
+}
 
+void lcd_send_cmd (char cmd)
+{
+  char data_u, data_l;
+	uint8_t data_t[4];
+	data_u = (cmd&0xf0);
+	data_l = ((cmd<<4)&0xf0);
+	data_t[0] = data_u|0x0C;  //en=1, rs=0
+	data_t[1] = data_u|0x08;  //en=0, rs=0
+	data_t[2] = data_l|0x0C;  //en=1, rs=0
+	data_t[3] = data_l|0x08;  //en=0, rs=0
+	HAL_I2C_Master_Transmit (&hi2c1, SLAVE_ADDRESS_LCD,(uint8_t *) data_t, 4, HAL_MAX_DELAY);
+}
+
+void lcd_init (void)
+{
+	HAL_Delay(45); //Datasheet especifica espera de 40ms
+	lcd_send_cmd (0x30); //Encendido del display y del cursor
+	HAL_Delay(5); //Datasheet especifica espera de 4.1ms
+	lcd_send_cmd (0x30); //El datasheet especifica que se debe repetir el envio de esta instruccion
+	HAL_Delay(1); //Datasheet especifica espera de 100us
+	lcd_send_cmd(0x30);
+	HAL_Delay(1);
+	lcd_send_cmd (0x20);  // 4bit mode
+	HAL_Delay(1);
+	lcd_send_cmd (0x28); // Function set --> DL=0 (4 bit mode), N = 1 (2 line display) F = 0 (5x8 characters)
+	HAL_Delay(1);
+	lcd_send_cmd (0x08); //Display on/off control --> D=0,C=0, B=0  ---> display off
+	HAL_Delay(1);
+	lcd_send_cmd (0x01);  //Clear
+	HAL_Delay(1);
+	lcd_send_cmd (0x06); //Entry mode set --> I/D = 1 (increment cursor) & S = 0 (no shift)
+	HAL_Delay(1);
+	lcd_send_cmd (0x0C); //Display on/off control --> D = 1, C and B = 0. (Cursor and blink, last two bits)
+	HAL_Delay(1);
+}
+
+void lcd_send_string (char *str)
+{
+	//Escribe a continuación de lo que haya
+	static int contador_linea = 0; //Static para que no se borre entre ejecuciones de la función
+	contador_linea = 0;
+	while (*str){
+		lcd_send_data (*str++);
+		contador_linea = (contador_linea) % (ROWS*LINES); //Contar hasta el número de caracteres máximo
+		contador_linea++;
+		if (contador_linea == ROWS)
+			lcd_send_cmd(0xc0); //Pasa a la segunda línea
+		if (contador_linea > ROWS*LINES)
+			return; //No hace nada más porque no hay espacio
+	}
+}
+
+void lcd_update (char *str){
+
+	lcd_clear(); //Borra la pantalla y pone el cursor en la esquina superior izquierda
+	//En esta funcion se hacen los saltos de linea necesarios.
+	int contador_lineas = 0; //Static para que no se borre entre ejecuciones de la función
+	contador_lineas = 0;
+	while (*str){
+		lcd_send_data (*str++);
+		contador_lineas = (contador_lineas) % (ROWS*LINES); //Contar hasta el número de caracteres máximo
+		contador_lineas++;
+		if (contador_lineas == ROWS)
+			lcd_send_cmd(0xc0); //Pasa a la segunda línea
+		if (contador_lineas > ROWS*LINES)
+			return; //No hace nada más porque no hay espacio
+	}
+
+}
+
+void lcd_clear(void){ //Tambien posiciona el cursor en la esquina superior izquierda
+	for (int i=0; i < ROWS*LINES; i++)
+		lcd_send_data(' ');
+	lcd_send_cmd(0x80); //Posicionar el cursor
+}
+
+void strdel(char* cadena){
+	for (int i=0; i < sizeof(cadena); i++)
+		cadena[i] = 0;
+}
 /* USER CODE END 4 */
 
 /**
