@@ -152,6 +152,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	  /*
 	  for (int i=0; i<500; i++){
 		//media
 	  }
@@ -165,6 +167,7 @@ int main(void)
 	  		HAL_NVIC_EnableIRQ(EXTI0_IRQn); //Volver a habilitar las interrupciones
 	  	  }
 	  	  //}
+	  	  */
   }
   /* USER CODE END 3 */
 }
