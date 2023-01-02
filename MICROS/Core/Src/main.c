@@ -192,13 +192,34 @@ int main(void)
 	  strdel(texto_pantalla);
 	  char buffer [2];
 	  if (ADC_value[0]/100 > 10)
-	  	  sprintf(buffer, "%i", ADC_value[0]/100);
+	  	  sprintf(buffer, "%i", ADC_value[1]/100);
 	  else
-		  sprintf(buffer, "0%i", ADC_value[0]/100);
+		  sprintf(buffer, "0%i", ADC_value[1]/100);
 
-	  strcpy(texto_pantalla, "Midiendo...|SistHumedad:");
-	  strcat(texto_pantalla, buffer);
-	  strcat(texto_pantalla, "%|STBY");
+	  if (!flag_riego && !flag_agua){
+		  strcpy(texto_pantalla, "Midiendo...|SistHumedad:");
+	      strcat(texto_pantalla, buffer);
+	      strcat(texto_pantalla, "%");
+	      strcat(texto_pantalla, "|STBY");
+	     }
+	  else if (flag_riego && !flag_agua){
+	      strcpy(texto_pantalla, "Regando....|SistHumedad:");
+	      strcat(texto_pantalla, buffer);
+	      strcat(texto_pantalla, "%");
+	      strcat(texto_pantalla, "|  ON");
+	     }
+	  else if (flag_riego && flag_agua){
+	      strcpy(texto_pantalla, "ALERTA| Sin aguaHumedad:");
+	      strcat(texto_pantalla, buffer);
+	      strcat(texto_pantalla, "% !!!");
+	      }
+	  else if (!flag_riego && flag_agua){
+	      strcpy(texto_pantalla, "Midiendo..|AVISOHum:");
+	      strcat(texto_pantalla, buffer);
+	      strcat(texto_pantalla, "%|SIN AGUA");
+	  	  }
+	  else
+	      strcpy(texto_pantalla, "ERROR");
 
 	  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
 
