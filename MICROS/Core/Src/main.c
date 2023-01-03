@@ -125,7 +125,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
     		flag_boton = 1; //Si se pulsa el boton cuando no se esta regando
     	} else {
     		flag_riego = 0; //Si se pulsa el boton mientras se esta regando se para de regar
-    		HAL_TIM_OC_Stop(&htim1, TIM_CHANNEL_2);
+    		HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_2);
     	}
     }
 }
@@ -133,7 +133,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 void HAL_TIM_OC_DelayElapsedCallback (TIM_HandleTypeDef* htim){
 	if (htim->Instance == TIM1){
 		flag_riego = 0;
-		HAL_TIM_OC_Stop(&htim1, TIM_CHANNEL_2);
+		HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_2);
 		__HAL_TIM_SET_COUNTER(&htim1, 0);
 	}
 }
@@ -144,6 +144,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 		lcd_update(texto_pantalla);
 		__HAL_TIM_SET_COUNTER(&htim2, 0);
 	}
+
 }
 
 
@@ -209,23 +210,24 @@ int main(void)
 
 	  for (int i=0; i<100; i++){
 		  suma = suma + porcentaje;
-	  }
-	  media = suma / 500;
 
+	  }
+	  media = suma / 100;
+	  suma=0;
 	  flag_agua = detec_lvl(ADC_value[0]);
 
 	  char buffer [2];
-	  if (porcentaje > 10)
-	  	  sprintf(buffer, "%i", porcentaje);
-	  else if (porcentaje==100)
-		  sprintf(buffer, "%i", porcentaje);
+	  if (media > 10)
+	  	  sprintf(buffer, "%i", media);
+	  else if (media==100)
+		  sprintf(buffer, "%i", media);
 	  else
-		  sprintf(buffer, "0%i", porcentaje);
+		  sprintf(buffer, "0%i", media);
 
 	  if (!flag_riego && flag_agua != 0){ // si no esta regando y hay agua en el deposito = midiendo
 		  strcpy(texto_pantalla, "Midiendo...|SistHumedad:");
 	      strcat(texto_pantalla, buffer);
-	      if(porcentaje!=100)
+	      if(media!=100)
 	      strcat(texto_pantalla, "%");
 	      strcat(texto_pantalla, "|STBY");
 	     }
@@ -241,7 +243,7 @@ int main(void)
 	      strcat(texto_pantalla, "% !!!");
 	      }
 	  else if (!flag_riego && flag_agua == 0){
-	      strcpy(texto_pantalla, "  Midiendo..|AVISOHum:");
+	      strcpy(texto_pantalla, "Midiendo..|AVISOHum:");
 	      strcat(texto_pantalla, buffer);
 	      strcat(texto_pantalla, "%|SIN AGUA");
 	  	  }
@@ -251,12 +253,12 @@ int main(void)
 	  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
 
 
-	  if (((porcentaje < 50) || (flag_boton == 1)) && (flag_riego == 0)){
+	  if (((media < 50) || (flag_boton == 1)) && (flag_riego == 0)){
 		  flag_boton = 0;
 	  	  if (detec_lvl(ADC_value[0]) > 0){
 	  		  HAL_NVIC_DisableIRQ(EXTI0_IRQn); //Deshabilitar las interrupciones
 	  		  flag_riego = 1;
-	  		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, 1);
+	  		  //HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, 1);
 	  		  HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_2);
 	  		  HAL_NVIC_EnableIRQ(EXTI0_IRQn); //Volver a habilitar las interrupciones
 	  	  }
@@ -427,7 +429,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 15999;
+  htim1.Init.Prescaler = 24999;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 9999;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -452,8 +454,8 @@ static void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_INACTIVE;
-  sConfigOC.Pulse = 9999;
+  sConfigOC.OCMode = TIM_OCMODE_ACTIVE;
+  sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
