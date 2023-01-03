@@ -147,7 +147,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if (htim->Instance == TIM2){
 		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
 		lcd_update(texto_pantalla);
-		HAL_TIM_Base_Start_IT(&htim2);
+		__HAL_TIM_SET_COUNTER(&htim2, 0);
 	}
 }
 
@@ -193,8 +193,10 @@ int main(void)
   strcpy(texto_pantalla, "Bienvenido al   sistema de riego");
   lcd_update(texto_pantalla);
   uint32_t tiempo= HAL_GetTick();
- while( (HAL_GetTick()-tiempo)<100)
+ while( (HAL_GetTick()-tiempo)<1000)
 {
+	 strcpy(texto_pantalla, "Bienvenido al   sistema de riego");
+
   //Para que el mensaje se mantenga en la patanlla 1 segundo
  }
   lcd_clear();
@@ -210,16 +212,19 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  //info();
 	  porcentaje=humedad(ADC_value[1]);
-	  strdel(texto_pantalla);
+	 // strdel(texto_pantalla);
 	  char buffer [2];
 	  if (porcentaje > 10)
 	  	  sprintf(buffer, "%i", porcentaje);
+	  else if (porcentaje==100)
+		  sprintf(buffer, "%i", porcentaje);
 	  else
 		  sprintf(buffer, "0%i", porcentaje);
 
 	  if (!flag_riego && !flag_agua){
 		  strcpy(texto_pantalla, "Midiendo...|SistHumedad:");
 	      strcat(texto_pantalla, buffer);
+	      if(porcentaje!=100)
 	      strcat(texto_pantalla, "%");
 	      strcat(texto_pantalla, "|STBY");
 	     }
@@ -235,7 +240,7 @@ int main(void)
 	      strcat(texto_pantalla, "% !!!");
 	      }
 	  else if (!flag_riego && flag_agua){
-	      strcpy(texto_pantalla, "Midiendo..|AVISOHum:");
+	      strcpy(texto_pantalla, "  Midiendo..|AVISOHum:");
 	      strcat(texto_pantalla, buffer);
 	      strcat(texto_pantalla, "%|SIN AGUA");
 	  	  }
@@ -499,7 +504,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 24999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 500;
+  htim2.Init.Period = 750;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -646,6 +651,8 @@ void lcd_update (char *str){
 
 	lcd_clear(); //Borra la pantalla y pone el cursor en la esquina superior izquierda
 	//En esta funcion se hacen los saltos de linea necesarios.
+	//lcd_send_cmd(0x01);
+	//lcd_send_cmd(0x80);
 	int contador_lineas = 0; //Static para que no se borre entre ejecuciones de la función
 	contador_lineas = 0;
 	while (*str){
@@ -673,6 +680,8 @@ void lcd_clear(void){ //Tambien posiciona el cursor en la esquina superior izqui
 void strdel(char* cadena){
 	for (int i=0; i < LINES*ROWS; i++)
 		*cadena++ = ' ';
+
+
 }
 
 void info(void){
