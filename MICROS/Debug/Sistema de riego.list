@@ -751,7 +751,7 @@ int main(void)
  80007a6:	4603      	mov	r3, r0
  80007a8:	4a78      	ldr	r2, [pc, #480]	; (800098c <main+0x280>)
  80007aa:	6013      	str	r3, [r2, #0]
-	 // strdel(texto_pantalla);
+
 	  char buffer [2];
 	  if (porcentaje > 10)
  80007ac:	4b77      	ldr	r3, [pc, #476]	; (800098c <main+0x280>)
@@ -2058,8 +2058,7 @@ void lcd_update (char *str){
 	lcd_clear(); //Borra la pantalla y pone el cursor en la esquina superior izquierda
  8001002:	f000 f82a 	bl	800105a <lcd_clear>
 	//En esta funcion se hacen los saltos de linea necesarios.
-	//lcd_send_cmd(0x01);
-	//lcd_send_cmd(0x80);
+
 	int contador_lineas = 0; //Static para que no se borre entre ejecuciones de la función
  8001006:	2300      	movs	r3, #0
  8001008:	60fb      	str	r3, [r7, #12]

@@ -212,7 +212,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  //info();
 	  porcentaje=humedad(ADC_value[1]);
-	 // strdel(texto_pantalla);
+
 	  char buffer [2];
 	  if (porcentaje > 10)
 	  	  sprintf(buffer, "%i", porcentaje);
@@ -651,8 +651,7 @@ void lcd_update (char *str){
 
 	lcd_clear(); //Borra la pantalla y pone el cursor en la esquina superior izquierda
 	//En esta funcion se hacen los saltos de linea necesarios.
-	//lcd_send_cmd(0x01);
-	//lcd_send_cmd(0x80);
+
 	int contador_lineas = 0; //Static para que no se borre entre ejecuciones de la función
 	contador_lineas = 0;
 	while (*str){
