@@ -67,13 +67,13 @@ begin
         INCL_UP <= '0';
         INCL_DOWN <= '0';
         ENABLE <= '0';
-        RESET <= '1';
+        RESET <= '0';
         wait for 1.25 * TbPeriod;
             SPEED_DOWN <= '1';
         wait for 1.5 * TbPeriod;
             SPEED_DOWN <= '0';
             INCL_UP <= '1';
-            RESET <= '0';
+            RESET <= '1';
         wait for 1.5 * TbPeriod;
             SPEED_UP <= '1';
             ENABLE <= '1';

@@ -39,6 +39,7 @@ architecture Behavioral of Increment_tb is
   CONSTANT OUT_WIDTH: POSITIVE:= 13;
   CONSTANT CONVERSION: POSITIVE:=  5;
    constant CLKPeriod: time:=10 ns;
+   SIGNAL ENABLE: STD_LOGIC;
   SIGNAL      ENTRY_UP :  STD_LOGIC; --'1' equals +1
    SIGNAL        ENTRY_DOWN: STD_LOGIC; --'1' equals -1
    signal         CLK:  STD_LOGIC;
@@ -53,6 +54,7 @@ generic(
 );
     Port ( ENTRY_UP : in STD_LOGIC; --'1' equals +1
            ENTRY_DOWN: in STD_LOGIC; --'1' equals -1
+           ENABLE: in STD_LOGIC;
             CLK: in STD_LOGIC;
             RESET: in std_logic ;
            OUTP : out unsigned (out_width-1 downto 0));
@@ -72,6 +74,7 @@ INCREMENT_TB : INCREMENT
     ENTRY_UP =>ENTRY_UP,
            ENTRY_DOWN =>ENTRY_DOWN,
             CLK=> CLK,
+            ENABLE=>ENABLE,
             RESET =>RESET,
            OUTP =>outp
            );
@@ -87,6 +90,7 @@ INCREMENT_TB : INCREMENT
     
          input: process
     begin
+    
     wait for 0.25*CLKPeriod;
     ENTRY_UP<='0';
     wait for 0.25*CLKPeriod;
@@ -96,6 +100,7 @@ INCREMENT_TB : INCREMENT
       
         end if;
     end process;  
+    ENABLE<='0' AFTER 0.5*CLKPeriod, '1' AFTER 2*CLKPeriod;
     Entry_down<='0' after 4*CLKPeriod, '1' after 5 * CLKPeriod, '0' after 6*CLKPeriod;
-   Reset<='1' after 1.25*CLKPeriod, '0' after 1.5 * CLKPeriod;
+   Reset<='0' after 2*CLKPeriod, '1' after 3* CLKPeriod;
 end Behavioral;

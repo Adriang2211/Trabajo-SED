@@ -120,6 +120,6 @@ end process;
 LOAD_ENABLE<='0' after 0.05 ms, '1' after 0.1 ms, '0' after 0.33 ms;
 ENABLE<='0' after 0.1 ms,'1' after 0.2 ms;
 CE<= '0' after 0.1 ms, '1' after 0.32005 ms;
-reset<= '1' after 0.001ms, '0' after 0.3 ms;
+reset<= '0' after 0.001ms, '1' after 0.3 ms;
 UP_NDOWN<='1' after 0.1 ms, '0' after 0.8 ms;
 end Behavioral;

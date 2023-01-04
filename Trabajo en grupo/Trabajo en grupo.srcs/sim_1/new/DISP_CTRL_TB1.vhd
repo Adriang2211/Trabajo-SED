@@ -58,7 +58,7 @@ begin
         speed <= "0101";
         incl <= "0010";
         time_data <= (others=>'0');
-        reset <= '0';
+        reset <= '1';
         wait for 10000*ClkPeriod;
         report "FIN";
         std.env.finish;
