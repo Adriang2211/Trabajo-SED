@@ -80,7 +80,7 @@ uint16_t ADC_value[2],ADC_buffer[2];//[0] para sensor nivel y [1] para sensor de
 volatile int flag_riego = 0;
 volatile int flag_boton = 0;
 volatile int flag_agua = 0; //Para cuando el deposito de agua esta vacio
-uint32_t media = 0;
+int media = 0;
 char texto_pantalla [LINES*ROWS];
 int contador_linea=0;
 int porcentaje;
@@ -210,7 +210,6 @@ int main(void)
 
 	  for (int i=0; i<100; i++){
 		  suma = suma + porcentaje;
-
 	  }
 	  media = suma / 100;
 	  suma=0;
@@ -237,10 +236,10 @@ int main(void)
 	      strcat(texto_pantalla, "%");
 	      strcat(texto_pantalla, "|  ON");
 	     }
-	  else if (flag_riego && flag_agua == 0){
+	  else if (flag_riego && flag_agua == 0){ // NO OCURRE
 	      strcpy(texto_pantalla, "ALERTA| Sin aguaHumedad:");
 	      strcat(texto_pantalla, buffer);
-	      strcat(texto_pantalla, "% !!!");
+	      strcat(texto_pantalla, "%| !!!");
 	      }
 	  else if (!flag_riego && flag_agua == 0){
 	      strcpy(texto_pantalla, "Midiendo..|AVISOHum:");
@@ -262,6 +261,11 @@ int main(void)
 	  		  HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_2);
 	  		  HAL_NVIC_EnableIRQ(EXTI0_IRQn); //Volver a habilitar las interrupciones
 	  	  }
+	  }
+
+	  if ((!flag_agua) && (flag_riego)){
+		  flag_riego = 0;
+		  HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_2);
 	  }
   }
   /* USER CODE END 3 */
@@ -429,7 +433,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 24999;
+  htim1.Init.Prescaler = 49999;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 9999;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -455,7 +459,7 @@ static void MX_TIM1_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_ACTIVE;
-  sConfigOC.Pulse = 0;
+  sConfigOC.Pulse = 9999;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
