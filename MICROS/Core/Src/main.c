@@ -36,6 +36,7 @@
 #define LINES 2 //Dimensiones LCD
 #define ROWS 16 //Dimensiones LCD
 #define NUM_MEDIDAS 10
+#define T_DEBOUNCER 500 //Tiempo entre pulsaciones fijado en 0,5s
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -85,6 +86,7 @@ volatile uint32_t media = 0;
 volatile uint32_t ultimas_medidas [NUM_MEDIDAS] = {100, 100, 100, 100, 100, 100, 100, 100, 100, 100}; //Evita que se encienda al riego al encender
 char texto_pantalla [LINES*ROWS];
 int contador_linea=0;
+volatile int ultima_pulsacion = 0;
 
 //int porcentaje;
 //int suma = 0;
@@ -123,13 +125,14 @@ float num=0;
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-    if (GPIO_Pin==GPIO_PIN_0){
+    if (GPIO_Pin==GPIO_PIN_0 && (HAL_GetTick()-ultima_pulsacion)>T_DEBOUNCER){
     	if (flag_riego == 0){
     		flag_boton = 1; //Si se pulsa el boton cuando no se esta regando
     	} else {
     		flag_riego = 0; //Si se pulsa el boton mientras se esta regando se para de regar
     		HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_2);
     	}
+    	ultima_pulsacion = HAL_GetTick();
     }
 }
 
