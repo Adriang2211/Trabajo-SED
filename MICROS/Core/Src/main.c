@@ -37,6 +37,7 @@
 #define ROWS 16 //Dimensiones LCD
 #define NUM_MEDIDAS 10
 #define T_DEBOUNCER 500 //Tiempo entre pulsaciones fijado en 0,5s
+#define TIEMPO_DESDE_ULTIMA_VEZ 5000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -87,9 +88,7 @@ volatile uint32_t ultimas_medidas [NUM_MEDIDAS] = {100, 100, 100, 100, 100, 100,
 char texto_pantalla [LINES*ROWS];
 int contador_linea=0;
 volatile int ultima_pulsacion = 0;
-
-//int porcentaje;
-//int suma = 0;
+volatile int ultima_vez = 0;
 
 void HAL_ADC_ConvCpltCallback (ADC_HandleTypeDef * hadc){
 
@@ -131,6 +130,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
     	} else {
     		flag_riego = 0; //Si se pulsa el boton mientras se esta regando se para de regar
     		HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_2);
+    		ultima_vez = HAL_GetTick();
     	}
     	ultima_pulsacion = HAL_GetTick();
     }
@@ -141,6 +141,7 @@ void HAL_TIM_OC_DelayElapsedCallback (TIM_HandleTypeDef* htim){
 		flag_riego = 0;
 		HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_2);
 		__HAL_TIM_SET_COUNTER(&htim1, 0);
+		ultima_vez = HAL_GetTick();
 	}
 }
 
@@ -262,7 +263,7 @@ int main(void)
 	  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
 
 
-	  if (((media < 50) || (flag_boton == 1)) && (flag_riego == 0)){
+	  if (((media < 50) || (flag_boton == 1)) && (flag_riego == 0) && ((HAL_GetTick() - ultima_vez) > TIEMPO_DESDE_ULTIMA_VEZ)){
 		  flag_boton = 0;
 	  	  if (detec_lvl(ADC_value[0]) > 0){
 	  		  HAL_NVIC_DisableIRQ(EXTI0_IRQn); //Deshabilitar las interrupciones
@@ -277,7 +278,8 @@ int main(void)
 	  if ((!flag_agua) && (flag_riego)){
 	  		 flag_riego = 0;
 	  		 HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_2);
-	  		 __HAL_TIM_SET_COUNTER(&htim2, 0);
+	  		 __HAL_TIM_SET_COUNTER(&htim1, 0);
+	  		 ultima_vez = HAL_GetTick();
 	  }
 
   }
