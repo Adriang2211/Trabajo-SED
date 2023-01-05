@@ -35,7 +35,7 @@
 #define SLAVE_ADDRESS_LCD 0x4E //Dirección LCD
 #define LINES 2 //Dimensiones LCD
 #define ROWS 16 //Dimensiones LCD
-#define NUM_MEDIDAS 5
+#define NUM_MEDIDAS 10
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -82,9 +82,10 @@ volatile int flag_riego = 0;
 volatile int flag_boton = 0;
 volatile int flag_agua = 0; //Para cuando el deposito de agua esta vacio
 volatile uint32_t media = 0;
-volatile uint32_t ultimas_medidas [NUM_MEDIDAS] = {100, 100, 100, 100, 100}; //Evita que se encienda al riego al encender
+volatile uint32_t ultimas_medidas [NUM_MEDIDAS] = {100, 100, 100, 100, 100, 100, 100, 100, 100, 100}; //Evita que se encienda al riego al encender
 char texto_pantalla [LINES*ROWS];
 int contador_linea=0;
+
 //int porcentaje;
 //int suma = 0;
 
@@ -227,6 +228,7 @@ int main(void)
 	  //}
 	  //media = suma / 100;
 	  //suma=0;
+
 	  flag_agua = detec_lvl(ADC_value[0]);
 
 	  char buffer [2];
@@ -442,9 +444,9 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 24999;
+  htim1.Init.Prescaler = 49999;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 9999;
+  htim1.Init.Period = 4999;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -515,9 +517,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 24999;
+  htim2.Init.Prescaler = 49999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 750;
+  htim2.Init.Period = 500;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -664,7 +666,7 @@ void lcd_update (char *str){
 
 	lcd_clear(); //Borra la pantalla y pone el cursor en la esquina superior izquierda
 	//En esta funcion se hacen los saltos de linea necesarios.
-
+	/*
 	int contador_lineas = 0;
 	contador_lineas = 0;
 	while (*str){
@@ -676,6 +678,8 @@ void lcd_update (char *str){
 		if (contador_lineas > ROWS*LINES)
 			return; //No hace nada más porque no hay espacio
 	}
+	*/
+	lcd_send_string(str);
 
 }
 
