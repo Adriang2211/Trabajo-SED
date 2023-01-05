@@ -35,6 +35,7 @@
 #define SLAVE_ADDRESS_LCD 0x4E //Dirección LCD
 #define LINES 2 //Dimensiones LCD
 #define ROWS 16 //Dimensiones LCD
+#define NUM_MEDIDAS 5
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -80,11 +81,12 @@ uint16_t ADC_value[2],ADC_buffer[2];//[0] para sensor nivel y [1] para sensor de
 volatile int flag_riego = 0;
 volatile int flag_boton = 0;
 volatile int flag_agua = 0; //Para cuando el deposito de agua esta vacio
-uint32_t media = 0;
+volatile uint32_t media = 0;
+volatile uint32_t ultimas_medidas [NUM_MEDIDAS] = {100, 100, 100, 100, 100}; //Evita que se encienda al riego al encender
 char texto_pantalla [LINES*ROWS];
 int contador_linea=0;
-int porcentaje;
-int suma = 0;
+//int porcentaje;
+//int suma = 0;
 
 void HAL_ADC_ConvCpltCallback (ADC_HandleTypeDef * hadc){
 
@@ -143,6 +145,17 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
 		lcd_update(texto_pantalla);
 		__HAL_TIM_SET_COUNTER(&htim2, 0);
+
+		//Guardar las medidas de humedad
+		for (int i = 0; i < NUM_MEDIDAS-1; i++)
+			ultimas_medidas[i] = ultimas_medidas[i+1];
+		ultimas_medidas[NUM_MEDIDAS-1] = humedad(ADC_value[1]);
+
+		//Cacular la media
+		uint32_t sumatorio = 0;
+		for (int i = 0; i < NUM_MEDIDAS ; i++)
+			sumatorio += ultimas_medidas[i];
+		media = sumatorio / NUM_MEDIDAS;
 	}
 
 }
@@ -206,21 +219,21 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  //info();
-	  porcentaje = humedad(ADC_value[1]);
+	  //porcentaje = humedad(ADC_value[1]);
 
-	  for (int i=0; i<100; i++){
-		  suma = suma + porcentaje;
+	  //for (int i=0; i<100; i++){
+	  //	  suma = suma + porcentaje;
 
-	  }
-	  media = suma / 100;
-	  suma=0;
+	  //}
+	  //media = suma / 100;
+	  //suma=0;
 	  flag_agua = detec_lvl(ADC_value[0]);
 
 	  char buffer [2];
-	  if (media > 10)
+	  if (media >= 10)
 	  	  sprintf(buffer, "%i", media);
-	  else if (media==100)
-		  sprintf(buffer, "%i", media);
+	  //else if (media==100)
+		//  sprintf(buffer, "%i", media);
 	  else
 		  sprintf(buffer, "0%i", media);
 
@@ -652,7 +665,7 @@ void lcd_update (char *str){
 	lcd_clear(); //Borra la pantalla y pone el cursor en la esquina superior izquierda
 	//En esta funcion se hacen los saltos de linea necesarios.
 
-	int contador_lineas = 0; //Static para que no se borre entre ejecuciones de la función
+	int contador_lineas = 0;
 	contador_lineas = 0;
 	while (*str){
 		lcd_send_data (*str++);
