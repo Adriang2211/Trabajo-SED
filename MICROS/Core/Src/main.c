@@ -222,15 +222,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  //info();
-	  //porcentaje = humedad(ADC_value[1]);
-
-	  //for (int i=0; i<100; i++){
-	  //	  suma = suma + porcentaje;
-
-	  //}
-	  //media = suma / 100;
-	  //suma=0;
 
 	  flag_agua = detec_lvl(ADC_value[0]);
 
@@ -249,18 +240,18 @@ int main(void)
 	      strcat(texto_pantalla, "%");
 	      strcat(texto_pantalla, "|STBY");
 	     }
-	  else if (flag_riego && flag_agua != 0){
+	  else if (flag_riego && flag_agua != 0){ //Regando (hay suficiente agua para ello)
 	      strcpy(texto_pantalla, "Regando....|SistHumedad:");
 	      strcat(texto_pantalla, buffer);
 	      strcat(texto_pantalla, "%");
 	      strcat(texto_pantalla, "|  ON");
 	     }
-	  else if (flag_riego && flag_agua == 0){
+	  else if (media < 50 && flag_agua == 0){ //Debería estar regando pero no hay agua
 	      strcpy(texto_pantalla, "ALERTA| Sin aguaHumedad:");
 	      strcat(texto_pantalla, buffer);
 	      strcat(texto_pantalla, "% !!!");
 	      }
-	  else if (!flag_riego && flag_agua == 0){
+	  else if (!flag_riego && flag_agua == 0){ //No necesita regar pero si lo necesitara no habría agua
 	      strcpy(texto_pantalla, "Midiendo..|AVISOHum:");
 	      strcat(texto_pantalla, buffer);
 	      strcat(texto_pantalla, "%|SIN AGUA");
@@ -281,6 +272,14 @@ int main(void)
 	  		  HAL_NVIC_EnableIRQ(EXTI0_IRQn); //Volver a habilitar las interrupciones
 	  	  }
 	  }
+
+	  //Detener el riego si se queda sin agua
+	  if ((!flag_agua) && (flag_riego)){
+	  		 flag_riego = 0;
+	  		 HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_2);
+	  		 __HAL_TIM_SET_COUNTER(&htim2, 0);
+	  }
+
   }
   /* USER CODE END 3 */
 }
