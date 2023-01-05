@@ -89,6 +89,7 @@ char texto_pantalla [LINES*ROWS];
 int contador_linea=0;
 volatile int ultima_pulsacion = 0;
 volatile int ultima_vez = 0;
+volatile int nint=0;
 
 void HAL_ADC_ConvCpltCallback (ADC_HandleTypeDef * hadc){
 
@@ -104,7 +105,7 @@ int detec_lvl(uint16_t valor) // nivel del deposito
 		return 3;//50<x<100%
 	else if (valor<4000 && valor>=3500)
 		return 2;//<=25<x<50%
-	else if(valor<3500 && valor>180)
+	else if(valor<3500 && valor>200)
 		return 1;//<=25%
 	else
 		return 0;//0%
@@ -138,10 +139,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 void HAL_TIM_OC_DelayElapsedCallback (TIM_HandleTypeDef* htim){
 	if (htim->Instance == TIM1){
-		flag_riego = 0;
-		HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_2);
-		__HAL_TIM_SET_COUNTER(&htim1, 0);
-		ultima_vez = HAL_GetTick();
+		if(nint==0)
+			nint=1;
+		else
+		{	nint=0;
+			flag_riego = 0;
+					HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_2);
+					__HAL_TIM_SET_COUNTER(&htim1, 0);
+					ultima_vez = HAL_GetTick();
+		}
+
 	}
 }
 
@@ -276,10 +283,13 @@ int main(void)
 
 	  //Detener el riego si se queda sin agua
 	  if ((!flag_agua) && (flag_riego)){
-	  		 flag_riego = 0;
+		  flag_riego=0;
+		  nint=0;
 	  		 HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_2);
+
 	  		 __HAL_TIM_SET_COUNTER(&htim1, 0);
 	  		 ultima_vez = HAL_GetTick();
+
 	  }
 
   }
