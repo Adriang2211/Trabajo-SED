@@ -90,17 +90,35 @@ int contador_linea=0;
 volatile int ultima_pulsacion = 0;
 volatile int ultima_vez = 0;
 volatile int nint=0;
+//Reloj
+uint32_t second = 0;
+uint32_t minute = 0;
+uint32_t hour = 0;
+uint32_t count_second;
+uint32_t count_minute;
+uint32_t count_hour;
+//Para introducir la hora al conectar el sistema
+int intro_minute = 0;
+int intro_hour = 0;
+//Para introducir la hora a la que regar cada dia
+uint32_t water_minute = 0;
+uint32_t water_hour = 100; //Asi si se espera sin pulsar esta hora nunca se da y nunca salta el riego programado
+//Comprobaciones de ajustes iniciales
+int OK_hour = 0;
+int OK_minute = 0;
+int counter;
+int settings = 0;
+char time_h [2]; //Mostrar hora en display
+char time_m [2]; //Mostrar minutos en display
 
 void HAL_ADC_ConvCpltCallback (ADC_HandleTypeDef * hadc){
-
 	if (hadc->Instance == ADC1){
 		ADC_value[0]=ADC_buffer[0]; // Nivel
 		ADC_value[1]=ADC_buffer[1]; // Tierra
 	}
 }
 
-int detec_lvl(uint16_t valor) // nivel del deposito
-{
+int detec_lvl(uint16_t valor){ // nivel del deposito
 	if ( valor >=4000)
 		return 3;//50<x<100%
 	else if (valor<4000 && valor>=3500)
@@ -148,7 +166,6 @@ void HAL_TIM_OC_DelayElapsedCallback (TIM_HandleTypeDef* htim){
 					__HAL_TIM_SET_COUNTER(&htim1, 0);
 					ultima_vez = HAL_GetTick();
 		}
-
 	}
 }
 
@@ -169,7 +186,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 			sumatorio += ultimas_medidas[i];
 		media = sumatorio / NUM_MEDIDAS;
 	}
-
 }
 
 
@@ -221,6 +237,124 @@ int main(void)
  }
   lcd_clear();
   HAL_TIM_Base_Start_IT(&htim2);
+
+//Para instertar la hora actual
+  counter = HAL_GetTick();
+    while (!OK_hour){// Set hora
+  	  if (flag_boton){//Se incrementa 1 hora cada vez que se pulsa el boton
+    		if (intro_hour < 23){
+    			intro_hour++;
+    		} else {
+    			intro_hour = 0; //Vuelta a 0
+    		}
+    		flag_boton = 0;
+    		counter = HAL_GetTick();
+    	}
+    	if (HAL_GetTick() - counter > 5000){
+    		OK_hour = 1; //Si no se pulsa en 5segundos, se da por terminado el cambio de la hora
+    	}
+      //Mensaje en la pantalla
+  	  if (intro_hour >= 10)
+  	  	  sprintf(time_h, "%i", intro_hour);
+  	  else
+  		  sprintf(time_h, "0%i", intro_hour);
+
+    	strcpy (texto_pantalla, "Actual (hora):  ");
+    	strcat(texto_pantalla, time_h);
+    	strcat(texto_pantalla, ":00           ");
+    }
+    counter = HAL_GetTick();
+    while (!OK_minute){ // Set minutos
+    	if (flag_boton){ //Se incrementa 1 minuto cada vez que se pulsa el boton
+    		if (intro_minute < 59){
+    			intro_minute++;
+    		} else {
+    			intro_minute = 0;
+    		}
+    		flag_boton = 0;
+    		counter = HAL_GetTick();
+    	}
+    	if (HAL_GetTick() - counter > 5000){
+    		OK_minute = 1; //Si no se pulsa en 5segundos, se da por terminado el cambio de los minutos
+    	}
+    	//Mensaje en la pantalla
+  	  if (intro_minute >= 10)
+  	  	  sprintf(time_m, "%i", intro_minute);
+  	  else
+  		  sprintf(time_m, "0%i", intro_minute);
+
+  	strcpy (texto_pantalla, "Actual (mins):  ");
+  	strcat(texto_pantalla, time_h);
+  	strcat(texto_pantalla, ":");
+  	strcat(texto_pantalla, time_m);
+  	strcat(texto_pantalla, "           ");
+    }
+
+ //Para insetar la hora a la que se quiere regar o no activar la opcion
+    OK_hour = 0;
+    OK_minute = 0;
+    counter = HAL_GetTick();
+    while (!OK_hour){// Set hora de riego
+    	if (flag_boton){
+    		if (water_hour < 23){
+    			water_hour++;
+    		} else {
+    			water_hour = 0;
+    		}
+    		flag_boton = 0;
+    		counter = HAL_GetTick();
+    	}
+    	if (HAL_GetTick() - counter > 5000){
+    		OK_hour = 1;
+    	}
+    	//Mensaje en la pantalla
+    	if (water_hour == 100)
+    		strcpy (texto_pantalla, "Programar riego?SI=pulsa NO=wait");
+    	else {
+    		if (water_hour >= 10)
+    			sprintf(time_h, "%i", water_hour);
+    		else
+    			sprintf(time_h, "0%i", water_hour);
+
+    		strcpy (texto_pantalla, "Riego (hora):   ");
+    		strcat(texto_pantalla, time_h);
+    		strcat(texto_pantalla, ":00           ");
+    	}
+    }
+    counter = HAL_GetTick();
+    while (!OK_minute){ // Set minuto de riego
+    	if (flag_boton){
+    		if (water_minute < 59){
+    			water_minute++;
+    		} else {
+    			water_minute = 0;
+    		}
+    		flag_boton = 0;
+    		counter = HAL_GetTick();
+    	}
+    	if (HAL_GetTick() - counter > 5000){
+    		OK_minute = 1;
+    	}
+    	//Mensaje en la pantalla
+    	if (water_hour == 100)
+    	  		strcpy (texto_pantalla, "      wait                      ");
+    	else {
+    	  	if (water_minute >= 10)
+    	  		  	  sprintf(time_m, "%i", water_minute);
+    	  		  else
+    	  			  sprintf(time_m, "0%i", water_minute);
+
+    	  		strcpy (texto_pantalla, "Riego (mins):   ");
+    	  		strcat(texto_pantalla, time_h);
+    	  		strcat(texto_pantalla, ":");
+    	  		strcat(texto_pantalla, time_m);
+    	  		strcat(texto_pantalla, "           ");
+    	}
+    }
+
+    counter = HAL_GetTick();
+    settings = 1; //Terminado el setting
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -230,6 +364,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+//Conteo de tiempo
+	  count_second = ((HAL_GetTick()-counter) * 0.001);
+	  count_minute = ((HAL_GetTick()-counter) / 60000);
+	  count_hour = ((HAL_GetTick()-counter) / 3600000);
+//Hora real
+	  second = count_second % 60;
+	  minute = (intro_minute + count_minute) % 60;
+	  hour = (intro_hour + count_hour + ((intro_minute + count_minute) / 60)) % 24;
 
 	  flag_agua = detec_lvl(ADC_value[0]);
 
@@ -249,7 +391,10 @@ int main(void)
 	      strcat(texto_pantalla, "|STBY");
 	     }
 	  else if (flag_riego && flag_agua != 0){ //Regando (hay suficiente agua para ello)
-	      strcpy(texto_pantalla, "Regando....|SistHumedad:");
+	      if ((water_hour == hour) && (water_minute == minute) && (second < 4)) //Ademas regando en hora programada
+	    	  strcpy(texto_pantalla, "Hora regar.|SistHumedad:");
+	      else
+	    	  strcpy(texto_pantalla, "Regando....|SistHumedad:");
 	      strcat(texto_pantalla, buffer);
 	      strcat(texto_pantalla, "%");
 	      strcat(texto_pantalla, "|  ON");
@@ -257,7 +402,7 @@ int main(void)
 	  else if (media < 50 && flag_agua == 0){ //Debería estar regando pero no hay agua
 	      strcpy(texto_pantalla, "ALERTA| Sin aguaHumedad:");
 	      strcat(texto_pantalla, buffer);
-	      strcat(texto_pantalla, "% !!!");
+	      strcat(texto_pantalla, "%| !!!");
 	      }
 	  else if (!flag_riego && flag_agua == 0){ //No necesita regar pero si lo necesitara no habría agua
 	      strcpy(texto_pantalla, "Midiendo..|AVISOHum:");
@@ -270,7 +415,7 @@ int main(void)
 	  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
 
 
-	  if (((media < 50) || (flag_boton == 1)) && (flag_riego == 0) && ((HAL_GetTick() - ultima_vez) > TIEMPO_DESDE_ULTIMA_VEZ)){
+	  if (((media < 50) || (flag_boton == 1) || ((water_hour == hour) && (water_minute == minute) && (second < 4))) && (flag_riego == 0) && ((HAL_GetTick() - ultima_vez) > TIEMPO_DESDE_ULTIMA_VEZ)){
 		  flag_boton = 0;
 	  	  if (detec_lvl(ADC_value[0]) > 0){
 	  		  HAL_NVIC_DisableIRQ(EXTI0_IRQn); //Deshabilitar las interrupciones
@@ -286,7 +431,6 @@ int main(void)
 		  flag_riego=0;
 		  nint=0;
 	  		 HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_2);
-
 	  		 __HAL_TIM_SET_COUNTER(&htim1, 0);
 	  		 ultima_vez = HAL_GetTick();
 
