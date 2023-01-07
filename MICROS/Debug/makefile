@@ -60,8 +60,8 @@ all: main-build
 main-build: Sistema\ de\ riego.elf secondary-outputs
 
 # Tool invocations
-Sistema\ de\ riego.elf Sistema\ de\ riego.map: $(OBJS) $(USER_OBJS) D:\Users\Laura\Documents\GitHub\Trabajo-SED-VHDL\MICROS\STM32F411VETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Sistema de riego.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\Users\Laura\Documents\GitHub\Trabajo-SED-VHDL\MICROS\STM32F411VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Sistema de riego.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Sistema\ de\ riego.elf Sistema\ de\ riego.map: $(OBJS) $(USER_OBJS) C:\Users\nacho\Documents\GitHub\Trabajo-SED-VHDL\MICROS\STM32F411VETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Sistema de riego.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\nacho\Documents\GitHub\Trabajo-SED-VHDL\MICROS\STM32F411VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Sistema de riego.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

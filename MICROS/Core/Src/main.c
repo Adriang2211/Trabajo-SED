@@ -171,8 +171,7 @@ void HAL_TIM_OC_DelayElapsedCallback (TIM_HandleTypeDef* htim){
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if (htim->Instance == TIM2){
-		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
-		lcd_update(texto_pantalla);
+				lcd_update(texto_pantalla);
 		__HAL_TIM_SET_COUNTER(&htim2, 0);
 
 		//Guardar las medidas de humedad
@@ -225,7 +224,7 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   lcd_init();
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, 1);
+
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC_buffer, 2);
   strcpy(texto_pantalla, "Bienvenido al   sistema de riego");
   lcd_update(texto_pantalla);
@@ -378,8 +377,7 @@ int main(void)
 	  char buffer [2];
 	  if (media >= 10)
 	  	  sprintf(buffer, "%i", media);
-	  //else if (media==100)
-		//  sprintf(buffer, "%i", media);
+
 	  else
 		  sprintf(buffer, "0%i", media);
 
@@ -412,7 +410,7 @@ int main(void)
 	  else
 	      strcpy(texto_pantalla, "ERROR");
 
-	  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
+
 
 
 	  if (((media < 50) || (flag_boton == 1) || ((water_hour == hour) && (water_minute == minute) && (second < 4))) && (flag_riego == 0) && ((HAL_GetTick() - ultima_vez) > TIEMPO_DESDE_ULTIMA_VEZ)){
