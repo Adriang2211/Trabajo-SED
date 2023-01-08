@@ -3,7 +3,6 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 entity DIG_SEL_TB1 is
---  Port ( );
 end DIG_SEL_TB1;
 
 architecture Behavioral of DIG_SEL_TB1 is
@@ -47,11 +46,12 @@ begin
     test: process
     begin
         reset <= '0';
-        
         wait for clkPeriod*10;
         reset <= '1';
         wait for clkPeriod*3;
         reset <= '0';
+        wait for clkPeriod*3;
+        reset <= '1';
         wait for clkPeriod*20;
         
         report "End of simulation";

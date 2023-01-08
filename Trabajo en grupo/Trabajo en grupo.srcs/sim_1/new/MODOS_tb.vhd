@@ -17,10 +17,10 @@ architecture Behavioral of MODOS_tb is
         CLK        : in  STD_LOGIC; -- Señal de reloj
         RESET      : in  STD_LOGIC; -- Reset asincrono
         ENABLE     : in  STD_LOGIC; -- Chip enable
-        SPEED      : out UNSIGNED (3 downto 0); -- Control del motor de velocidad
-        INCL       : out UNSIGNED (3 downto 0); -- Control del motor de inclinacion
-        SPEED_DATA : out UNSIGNED (3 downto 0); -- Dato para mostrar en pantalla (display)
-        INCL_DATA  : out UNSIGNED (3 downto 0)
+        SPEED      : out STD_LOGIC_VECTOR (3 downto 0); -- Control del motor de velocidad
+        INCL       : out STD_LOGIC_VECTOR (3 downto 0); -- Control del motor de inclinacion
+        SPEED_DATA : out STD_LOGIC_VECTOR (3 downto 0); -- Dato para mostrar en pantalla (display)
+        INCL_DATA  : out STD_LOGIC_VECTOR (3 downto 0)
         );
     end component;
 
@@ -31,10 +31,10 @@ architecture Behavioral of MODOS_tb is
     signal CLK        : STD_LOGIC; 
     signal RESET      : STD_LOGIC; 
     signal ENABLE     : STD_LOGIC; 
-    signal SPEED      : UNSIGNED (3 downto 0);
-    signal INCL       : UNSIGNED (3 downto 0);
-    signal SPEED_DATA : UNSIGNED (3 downto 0);
-    signal INCL_DATA  : UNSIGNED (3 downto 0);
+    signal SPEED      : STD_LOGIC_VECTOR (3 downto 0);
+    signal INCL       : STD_LOGIC_VECTOR (3 downto 0);
+    signal SPEED_DATA : STD_LOGIC_VECTOR (3 downto 0);
+    signal INCL_DATA  : STD_LOGIC_VECTOR (3 downto 0);
     
     constant TbPeriod : time := 10 ns;
     signal TbClock : std_logic := '0';
