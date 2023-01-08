@@ -55,6 +55,13 @@ begin
     
     test_process: process
     begin
+        reset <= '0';
+        time_data <= "1001000111011";
+        speed <= "0111";
+        incl <= "0011";
+        wait for 23*ClkPeriod;
+        reset <= '1';
+        wait for 13*ClkPeriod;
         speed <= "0101";
         incl <= "0010";
         time_data <= (others=>'0');
